@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>쇼케이스</title>
+<style>
+:root{--ink:#1E1E1E;--lime:#CFFF68;--pink:#F8AEDF;--cobalt:#2745A0;--bg:#fff;--fg:#1E1E1E;--mute:#8b8f97;--line:#ececef;--soft:#f3f4f6;--card:#fff;--accent:#1E1E1E;--accent-soft:#f6f7f8;--hh:64px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+header.top{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid #ececef}
+.top-in{max-width:1400px;margin:0 auto;padding:12px 28px;display:flex;align-items:center;gap:20px}
+.logo-a{display:flex;align-items:center;flex:none;color:var(--ink);text-decoration:none}
+.logo-a svg.logo{display:block;height:28px;width:auto}
+.logo-t{font-family:"Arial Black","Pretendard",sans-serif;font-size:26px;font-weight:900;letter-spacing:-.01em;white-space:nowrap;line-height:1}
+.sbox{position:relative;flex:1 1 auto;min-width:0}
+.sbox svg{position:absolute;left:15px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:#8a8f98;pointer-events:none}
+.search{display:block;width:100%;height:42px;padding:0 16px 0 42px;border:0;border-radius:999px;background:#f1f2f4;font-size:15px;outline:0;transition:background .15s,box-shadow .15s}
+.search:focus{background:#fff;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(39,69,160,.35)}
+.hwrap{position:relative;flex:none}
+.hbtn{display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--ink);cursor:pointer}
+.hbtn:hover,.hbtn[aria-expanded=true]{background:#f1f2f4}
+.hbtn svg{width:20px;height:20px}
+.hpop{position:absolute;z-index:10;right:0;top:calc(100% + 8px);width:280px;max-width:calc(100vw - 24px);max-height:70vh;overflow-y:auto;padding:16px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.05)}
+.hpop .ht{margin:0 0 10px;font-size:14px;font-weight:700}
+.hpop ul{margin:0;padding:0;list-style:none}
+.hpop li{padding:9px 0;border-top:1px solid #f0f0f2;font-size:13px}
+.hpop li b{display:block;font-weight:600}
+.hpop li span{display:block;color:var(--mute);font-size:12px;margin-top:1px}
+/* NEW row */
+.newsec-in{max-width:1400px;margin:0 auto;padding:22px 28px 6px}
+.nh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.nh h2{display:flex;align-items:baseline;margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.nh span{color:var(--mute);font-size:13px}
+.nwrap{position:relative}
+.nrow{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:4px}
+.nrow::-webkit-scrollbar{display:none}
+.mini{position:relative;flex:none;width:170px;text-align:left;scroll-snap-align:start}
+.mini .cm,.card .cm,.fc .cm{display:block;cursor:pointer}
+.mini .mi{display:block;position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:var(--soft)}
+.mini img{display:block;width:100%;height:100%;object-fit:cover}
+.mini .mt{display:block;margin-top:6px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arw{position:absolute;top:64px;z-index:2;width:36px;height:36px;margin-top:-18px;padding:0;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.18);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.arw svg{width:18px;height:18px}
+.arw.l{left:-8px}.arw.r{right:-8px}
+/* pixel step-block accent */
+.px{--s:6px;display:inline-flex;align-items:flex-end;flex:none;margin-right:calc(var(--s)*1.4)}
+.px b{display:block;width:var(--s)}
+.px b:nth-child(1){height:var(--s);background:var(--lime)}
+.px b:nth-child(2){height:calc(var(--s)*2);background:var(--pink)}
+.px b:nth-child(3){height:calc(var(--s)*3);background:var(--cobalt)}
+.fvh .px{--s:10px}
+/* view switch */
+#viewbtn{margin-right:-10px}
+#viewbtn[aria-pressed=true],#viewbtn[aria-pressed=true]:hover{background:var(--cobalt);color:#fff}
+body:not([data-view=folders]) #folderview,body[data-view=folders] #gridview{display:none}
+.vin{animation:vin .35s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+/* folder view */
+.fv{max-width:1200px;margin:0 auto;padding:40px 28px 110px}
+.fvcrumb{margin:0 0 14px;color:var(--mute);font-size:13px;letter-spacing:.01em}
+.fvh{display:flex;align-items:baseline;margin:0;font-size:44px;line-height:1.15;font-weight:800;letter-spacing:-.02em}
+.fvintro{margin:14px 0 0;color:var(--mute);font-size:16px}
+.fvrule{height:1px;margin:28px 0 22px;border:0;background:var(--line)}
+.fvq{margin:0 0 6px}
+.cab{display:flex;flex-direction:column;padding:34px 0 4px}
+.fd{position:relative;margin-top:-42px;--o:calc(var(--i3)*32%);transition:opacity .3s}
+.fd:first-child{margin-top:0}
+.fd.dim{opacity:.45}
+.ftab{position:relative;isolation:isolate;display:flex;align-items:center;gap:12px;height:42px;min-width:210px;max-width:min(100%,calc(100% - var(--o)));margin-left:var(--o);padding:0 26px;border:0;border-radius:16px 16px 0 0;background:var(--fc);color:var(--ft);font:inherit;font-size:16px;font-weight:700;cursor:pointer;text-align:left;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.ftab::after{content:"";position:absolute;z-index:-1;right:-14px;bottom:0;width:14px;height:14px;background:radial-gradient(circle at 100% 0,transparent 13.5px,var(--fc) 14px)}
+.ftab:hover{transform:translateY(-3px)}
+.ftab:focus-visible{outline:2px solid var(--cobalt);outline-offset:3px}
+.fd.open .ftab{transform:translateY(-8px)}
+.fl{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn{flex:none;min-width:24px;padding:0 8px;border-radius:999px;background:var(--fp);font-size:13px;line-height:22px;text-align:center}
+.fband{position:relative;padding-bottom:42px;background:var(--fc);color:var(--ft);border-radius:0 14px 14px 14px;box-shadow:0 -6px 16px rgba(30,30,30,.10)}
+.fd.fw .ftab{border:1.5px solid var(--ink);border-bottom:0;margin-bottom:-1.5px;z-index:1}
+.fd.fw .ftab::after{display:none}
+.fd.fw .fband{border:1.5px solid var(--ink)}
+.fd.fw .fc{border:1px solid rgba(30,30,30,.15)}
+.fd:last-child .fband{padding-bottom:18px}
+.fbody{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .5s cubic-bezier(.2,.8,.2,1),visibility 0s .5s}
+.fd.open .fbody{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .5s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.fin{min-height:0;overflow:hidden}
+.fhead{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px 20px;padding:26px 30px 0}
+.fname{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 14px}
+.fname h3{margin:0;font-size:24px;line-height:1.25;font-weight:800;letter-spacing:-.01em}
+.fname span{font-size:14px;font-weight:600;opacity:.8}
+.fgo{padding:6px 2px;border:0;background:none;color:inherit;font:inherit;font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.fsubs{display:flex;flex-wrap:wrap;gap:8px;padding:16px 30px 0}
+.fsub{display:inline-flex;align-items:baseline;gap:6px;padding:5px 13px;border:0;border-radius:999px;background:var(--fp);color:inherit;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+.fsub:hover{filter:brightness(.96)}
+.fsub[aria-pressed=true]{background:var(--ft);color:var(--fc)}
+.fsub small{font-size:12px;font-weight:600;opacity:.7}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;padding:18px 30px 30px}
+.fempty{margin:0;padding:34px 30px 40px;font-size:15px;font-weight:600;opacity:.85}
+.fc{position:relative;display:block;min-width:0;padding:0 0 14px;border:0;border-radius:10px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.16);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.fc:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.22)}
+.fd.open .fin:not(.still) .fc{animation:fcin .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+@keyframes fcin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fc .fi{display:block;aspect-ratio:4/3;background:var(--soft)}
+.fc img{display:block;width:100%;height:100%;object-fit:cover}
+.fc .ft2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:10px 12px 0;font-size:14px;font-weight:700;line-height:1.35}
+.fc .fy{display:block;margin:4px 12px 0;color:var(--mute);font-size:12px}
+.filters{scroll-margin-top:var(--hh)}
+/* filter bar */
+.filters{position:sticky;top:var(--hh);z-index:30;background:#fff;border-bottom:1px solid var(--line);margin-top:14px}
+.filters-in{max-width:1400px;margin:0 auto;padding:10px 28px;display:flex;align-items:center;gap:16px}
+.fbtns{display:flex;align-items:center;gap:6px;flex:1 1 auto;min-width:0}
+.fb{display:inline-flex;align-items:center;gap:6px;flex:none;padding:8px 12px;border:0;border-radius:8px;background:none;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.fb:hover,.fb[aria-expanded=true]{background:var(--soft)}
+.fb svg{width:14px;height:14px;flex:none}
+.fb.on{font-weight:700;color:var(--cobalt)}
+.fb[aria-pressed=true]{background:var(--ink);color:#fff;font-weight:700}
+.bub{display:inline-block;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+.fright{display:flex;align-items:center;gap:14px;flex:none}
+.count{color:var(--mute);font-size:14px;white-space:nowrap}
+.sort{appearance:none;-webkit-appearance:none;border:0;border-radius:8px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E1E1E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center/14px;padding:8px 28px 8px 12px;font-size:14px;font-weight:600;cursor:pointer}
+.sort:hover{background-color:var(--soft)}
+.fpanel{position:absolute;z-index:35;top:calc(100% + 6px);left:0;min-width:220px;max-width:calc(100vw - 24px);max-height:60vh;overflow-y:auto;padding:8px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.05)}
+.opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:14px;cursor:pointer}
+.opt:hover{background:var(--soft)}
+.opt input{width:16px;height:16px;margin:0;accent-color:var(--cobalt);flex:none}
+.opt span{flex:1 1 auto}
+.opt small{color:var(--mute);font-size:12px}
+.opt.sub{padding:5px 10px 5px 36px;font-size:13px}
+.bub.pk{background:var(--pink);color:var(--ink)}
+.pact{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 10px 4px;margin-top:4px;border-top:1px solid var(--line)}
+.plink{padding:4px 0;border:0;background:none;color:var(--mute);font-size:12.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.plink:hover{color:var(--ink)}
+.pmsg{margin:0;padding:2px 10px 6px;color:var(--cobalt);font-size:12.5px;font-weight:600}
+.pe{margin:0;padding:10px;color:var(--mute);font-size:13px}
+.chips{max-width:1400px;margin:0 auto;padding:12px 28px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.sc{padding:5px 11px;border:0;border-radius:999px;background:var(--cobalt);color:#fff;font-size:13px;cursor:pointer}
+.sc:hover{background:#1d3680}
+.clear{padding:5px 8px;border:0;background:none;color:var(--mute);cursor:pointer;text-decoration:underline;font-size:13px}
+main{max-width:1400px;margin:0 auto;padding:22px 28px 80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:28px 20px;align-items:start}
+.card{position:relative;display:block;width:100%;min-width:0;text-align:left}
+.card .ph{position:relative;display:block;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--soft);border:1px solid var(--line);transition:box-shadow .2s}
+.card:hover .ph{box-shadow:0 8px 22px rgba(0,0,0,.12)}
+.card img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.card:hover img{transform:scale(1.03)}
+.badge{position:absolute;top:10px;left:10px;padding:2px 9px;border-radius:999px;background:var(--lime);color:var(--ink);font-size:11px;font-weight:700;letter-spacing:.04em}
+.card .tr{display:flex;align-items:baseline;gap:10px;margin-top:10px}
+.card .t{flex:1 1 auto;min-width:0;font-weight:700;font-size:15px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .y{flex:none;color:var(--mute);font-size:13px}
+.cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:block;padding:34px 14px 12px;background:linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,.38) 55%,rgba(0,0,0,0));color:#fff;text-align:left;pointer-events:none}
+.cap .ck{display:block;margin-bottom:3px;font-size:11.5px;font-weight:500;opacity:.82;letter-spacing:.01em}
+.cap .cp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:17px;font-weight:800;line-height:1.3;letter-spacing:-.01em;text-shadow:0 1px 2px rgba(0,0,0,.25);word-break:keep-all}
+.mini .cap{padding:22px 9px 8px}.mini .cap .cp{font-size:13px;-webkit-line-clamp:2}
+.fc .fi{position:relative}.fc .cap{padding:26px 11px 9px}.fc .cap .cp{font-size:14.5px}
+.card .t.sub{font-weight:600;font-size:14px;color:#333}
+@media (max-width:640px){.cap .cp{font-size:15px}.card .cap{padding:28px 11px 10px}}
+/* bookmark button */
+.bm{position:absolute;z-index:3;top:10px;right:10px;display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.85);color:var(--ink);cursor:pointer;transition:background .15s}
+.bm:hover{background:#fff}
+.bm svg{width:17px;height:17px;fill:none;stroke:var(--ink)}
+.bm[aria-pressed=true] svg{fill:var(--pink)}
+.bm.pop{animation:bmpop .25s ease}
+@keyframes bmpop{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+.mini .bm{top:6px;right:6px;width:26px;height:26px}.mini .bm svg{width:14px;height:14px}
+.fc .bm{top:8px;right:8px}
+.bm.dt{position:static;flex:none;width:36px;height:36px;background:var(--soft)}
+.bm.dt:hover{background:#e6e7ea}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.tag{font-size:12px;color:#555;background:var(--soft);border-radius:4px;padding:1px 7px}
+.empty{padding:80px 0;text-align:center;color:var(--mute)}
+[hidden]{display:none!important}
+/* detail overlay */
+.ov{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.scrim{position:absolute;inset:0;background:rgba(20,18,15,.6)}
+.dlg{position:relative;display:grid;grid-template-columns:60% 40%;width:min(1200px,100%);max-height:100%;background:var(--bg);border-radius:18px;overflow:hidden}
+.x{position:absolute;top:12px;right:12px;z-index:3;width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.92);cursor:pointer;font-size:18px;box-shadow:0 1px 6px rgba(0,0,0,.2)}
+.car{position:relative;background:#171614;display:flex;align-items:center;justify-content:center;min-height:300px;touch-action:pan-y;user-select:none}
+.car img{display:block;max-width:100%;max-height:88vh;object-fit:contain}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.85);cursor:pointer;font-size:20px}
+.nav.p{left:12px}.nav.n{right:12px}
+.dots{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:7px}
+.dot{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}
+.dot[aria-current=true]{background:#fff}
+.cnt{position:absolute;left:12px;top:12px;padding:2px 10px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:12px}
+.info{padding:32px 30px;overflow-y:auto;max-height:92vh}
+.ttl{display:flex;align-items:flex-start;gap:10px;padding-right:34px}
+.info h2{flex:1 1 auto;min-width:0;margin:0;font-size:24px;line-height:1.3;letter-spacing:-.01em}
+.info .orig{margin:4px 0 18px;color:var(--mute);font-size:14px}
+.info dl{margin:0 0 18px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.info dt{color:var(--mute)}.info dd{margin:0}
+.info h3{margin:20px 0 6px;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:.04em}
+.info p{margin:0;font-size:15px}
+.quote{padding:12px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0}
+.src{display:inline-block;margin-top:22px;padding:9px 18px;border:1px solid var(--fg);border-radius:999px;color:var(--fg);text-decoration:none;font-size:14px}
+.src:hover{background:var(--fg);color:#fff}
+@media (hover:none),(max-width:820px){.arw{display:none}}
+@media (max-width:820px){
+ .dlg{grid-template-columns:1fr;overflow-y:auto}
+ .info{max-height:none;overflow:visible;padding:24px 20px}
+ .car img{max-height:60vh}
+ .ov{padding:0}.dlg{border-radius:0;height:100%}
+}
+@media (max-width:640px){
+ .top-in{padding:10px 16px;gap:10px}.logo-a svg.logo{height:22px}.top-in{flex-wrap:wrap;row-gap:8px}.hwrap{margin-left:auto}.sbox{order:3;flex:1 1 100%}.logo-t{font-size:20px}
+ .newsec-in{padding:16px 16px 4px}.nrow{gap:10px}.mini{width:140px}
+ #viewbtn{margin-left:auto;margin-right:0}.hwrap{margin-left:0}
+ .fv{padding:24px 16px 80px}.fvh{font-size:30px}.fvintro{font-size:14px}.fvrule{margin:20px 0 16px}.cab{padding-top:26px}
+ .fd{--o:calc(var(--i2)*48%)}.ftab{min-width:0;height:42px;max-width:min(60%,calc(100% - var(--o)));padding:0 18px}
+ .fsubs{padding:14px 16px 0}.fgrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:14px 16px 22px}.fhead{padding:20px 16px 0}.fname h3{font-size:20px}.fempty{padding:26px 16px 32px}
+ .filters-in{padding:8px 16px;flex-wrap:wrap;gap:4px}
+ .fbtns{flex:1 1 100%;overflow-x:auto;scrollbar-width:none}.fbtns::-webkit-scrollbar{display:none}
+ .fright{flex:1 1 100%;justify-content:space-between}
+ .fpanel{position:fixed;left:12px;right:12px;max-width:none;min-width:0}
+ .chips{padding:10px 16px 0}
+ main{padding:18px 16px 60px}
+ .grid{grid-template-columns:repeat(2,1fr);gap:16px 12px}
+}
+@media (max-width:400px){.grid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ---- 파일철 보기: flat poster style on ink ---- */
+body[data-view="folders"]{background:var(--ink)}
+body[data-view="folders"] .fv{color:#fff}
+body[data-view="folders"] .fvcrumb,body[data-view="folders"] .fvintro{color:rgba(255,255,255,.6)}
+body[data-view="folders"] .fvh{color:#fff}
+body[data-view="folders"] .fvrule{background:rgba(255,255,255,.14)}
+.fd{margin-top:-40px}
+.ftab{height:46px;min-width:200px;padding:0 24px;border-radius:10px 10px 0 0;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.ftab::after{display:none}
+.ftab:hover{transform:translateY(-4px)}
+.fd.open .ftab{transform:none}
+.ftab .fn{background:transparent!important;padding:0;font-weight:700;opacity:.55}
+.fband{border-radius:0 10px 10px 10px;box-shadow:none;padding-bottom:58px}
+.fd:last-child .fband{padding-bottom:24px}
+.fd.dim{opacity:.35}
+.fhead{padding:34px 34px 0}
+.fname h3{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.fname span{font-size:15px}
+.fsubs{padding:18px 34px 0}
+.fgrid{padding-left:34px!important;padding-right:34px!important}
+.fc{box-shadow:none;border-radius:8px}
+.fc:hover{box-shadow:none;transform:translateY(-4px)}
+.fd.fw .ftab,.fd.fw .fband{border:0}
+@media (max-width:640px){.ftab{height:40px;min-width:0;padding:0 16px;font-size:15px}.fd{margin-top:-34px}.fband{padding-bottom:34px}.fhead,.fsubs{padding-left:18px;padding-right:18px}.fgrid{padding-left:18px!important;padding-right:18px!important}}
+
+/* ---- pagination ---- */
+.fright .per{padding-right:26px;font-weight:500;color:var(--mute)}
+.fright .per:hover{color:var(--ink)}
+.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:56px 0 8px}
+.pg{min-width:38px;height:38px;padding:0 10px;border:0;border-radius:10px;background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,color .15s}
+.pg:hover:not(:disabled):not([aria-current]){background:var(--soft)}
+.pg[aria-current=page]{background:var(--cobalt);color:#fff;font-weight:800;cursor:default}
+.pg:disabled{color:#c4c4c8;cursor:default}
+.pg.ar{font-size:20px;line-height:1}
+.pg:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.pgdot{min-width:22px;color:var(--mute);text-align:center;letter-spacing:.1em}
+.fd.open .fin.still .fc.nw{animation:fcin .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+.fmore{display:flex;justify-content:center;padding:4px 34px 34px}
+.fmore button{padding:12px 28px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s}
+.fmore button:hover{transform:translateY(-2px)}
+.fmore button small{margin-left:8px;font-size:13px;font-weight:600;opacity:.65}
+@media (max-width:640px){.pager{gap:2px;margin-top:40px}.pg{min-width:34px;height:36px;padding:0 6px;font-size:14px}.fmore{padding:2px 16px 24px}.fright{gap:6px}.fright .count{margin-right:auto}}
+.info .studio{display:inline-block;margin:0 0 12px;padding:4px 12px;border-radius:999px;background:var(--lime);color:var(--ink);font-size:13px;font-weight:800;letter-spacing:.01em;line-height:1.4}
+</style>
+</head>
+<body data-view="grid">
+<script>try{document.body.setAttribute("data-view",localStorage.getItem("showcase-view")==="folders"?"folders":"grid")}catch(e){}</script>
+<header class="top" id="top">
+ <div class="top-in">
+  <a class="logo-a" href="#" onclick="window.scrollTo(0,0);return false" aria-label="맨 위로"><svg class="logo" viewBox="20 -1516 16196 1803" role="img" aria-label="SHOWCASE"><path fill="currentColor" d="M94 -416Q506 -274 963 -274Q1101 -274 1146.5 -287.0Q1192 -300 1192 -338Q1192 -374 1151.5 -386.5Q1111 -399 997 -399Q495 -399 257.5 -531.0Q20 -663 20 -946Q20 -1228 280.0 -1372.0Q540 -1516 1049 -1516Q1518 -1516 1911 -1372L1851 -850Q1624 -915 1429.0 -940.0Q1234 -965 1030 -965Q907 -965 857.0 -951.0Q807 -937 807.0 -901.0Q807 -865 846.5 -852.5Q886 -840 985 -840Q1344 -840 1561.5 -782.0Q1779 -724 1877.5 -605.5Q1976 -487 1976 -295Q1976 287 1083 287Q459 287 33 123ZM2703 246H2037V-1475H2703V-911H3256V-1475H3921V246H3256V-358H2703ZM5006 287Q4781 287 4593.0 225.0Q4405 163 4273.0 51.0Q4141 -61 4065.0 -221.5Q3989 -382 3982 -575H4701Q4712 -470 4793.5 -399.0Q4875 -328 5006 -328Q5147 -328 5230.5 -411.5Q5314 -495 5314.0 -616.0Q5314 -737 5231.5 -819.0Q5149 -901 5006 -901Q4868 -901 4785.0 -819.0Q4702 -737 4701 -596L3982 -657Q3991 -850 4067.0 -1009.5Q4143 -1169 4275.0 -1281.0Q4407 -1393 4594.0 -1454.5Q4781 -1516 5006 -1516Q5314 -1516 5546.5 -1404.0Q5779 -1292 5904.5 -1087.5Q6030 -883 6030.0 -614.0Q6030 -345 5904.5 -140.5Q5779 64 5546.5 175.5Q5314 287 5006 287ZM7094 246H6398L6050 -1475H6705L6814 -557L7002 -1475H7576L7764 -557L7873 -1475H8528L8180 246H7484L7289 -668ZM9572 287Q9265 287 9032.5 175.5Q8800 64 8674.0 -140.5Q8548 -345 8548.0 -614.0Q8548 -883 8674.0 -1087.5Q8800 -1292 9032.5 -1404.0Q9265 -1516 9572 -1516Q9971 -1516 10227.0 -1332.5Q10483 -1149 10553 -829L9874 -670Q9856 -768 9776.0 -834.5Q9696 -901 9572 -901Q9431 -901 9350.0 -816.0Q9269 -731 9267 -614Q9265 -498 9347.5 -413.0Q9430 -328 9572 -328Q9698 -328 9778.0 -395.5Q9858 -463 9876 -563L10553 -403Q10485 -82 10228.0 102.5Q9971 287 9572 287ZM12111 -1475 12623 246H11906L11849 0H11390L11333 246H10616L11128 -1475ZM11505 -492H11734L11620 -981ZM12717 -416Q13129 -274 13586 -274Q13724 -274 13769.5 -287.0Q13815 -300 13815 -338Q13815 -374 13774.5 -386.5Q13734 -399 13620 -399Q13118 -399 12880.5 -531.0Q12643 -663 12643 -946Q12643 -1228 12903.0 -1372.0Q13163 -1516 13672 -1516Q14141 -1516 14534 -1372L14474 -850Q14247 -915 14052.0 -940.0Q13857 -965 13653 -965Q13530 -965 13480.0 -951.0Q13430 -937 13430.0 -901.0Q13430 -865 13469.5 -852.5Q13509 -840 13608 -840Q13967 -840 14184.5 -782.0Q14402 -724 14500.5 -605.5Q14599 -487 14599 -295Q14599 287 13706 287Q13082 287 12656 123ZM16206 -952H15326V-829H16186V-420H15326V-297H16216V246H14660V-1475H16206Z"/></svg></a>
+  <div class="sbox">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+   <input id="q" class="search" type="search" placeholder="사례명, 사이트, 키워드 검색..." aria-label="검색" autocomplete="off">
+  </div>
+  <button id="viewbtn" class="hbtn" type="button" title="보기 방식 바꾸기" aria-label="보기 방식 바꾸기" aria-pressed="false">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+  </button>
+  <div class="hwrap">
+   <button id="hist" class="hbtn" type="button" aria-label="업데이트 기록" aria-expanded="false" aria-haspopup="true" aria-controls="histpop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+   </button>
+   <div id="histpop" class="hpop" role="dialog" aria-label="업데이트 기록" hidden></div>
+  </div>
+ </div>
+</header>
+<div id="gridview">
+<div id="filters" class="filters">
+ <div class="filters-in">
+  <div id="fbtns" class="fbtns" role="group" aria-label="필터"></div>
+  <div class="fright">
+   <span id="cnt" class="count" aria-live="polite"></span>
+   <select id="per" class="sort per" aria-label="한 페이지에 보일 사례 수" title="한 페이지에 보일 사례 수">
+    <option value="20">20개씩</option>
+    <option value="40">40개씩</option>
+    <option value="80">80개씩</option>
+   </select>
+   <select id="sort" class="sort" aria-label="정렬">
+    <option value="added">최신 추가순</option>
+    <option value="year">연도순</option>
+    <option value="name">이름순</option>
+   </select>
+  </div>
+ </div>
+ <div id="fpanel" class="fpanel" role="group" hidden></div>
+ <input id="bmfile" type="file" accept="application/json,.json" hidden>
+</div>
+<div id="chips" class="chips" hidden>
+ <span id="chiplist" style="display:contents"></span>
+ <button id="clr" class="clear" type="button">모두 지우기</button>
+</div>
+<main>
+ <div id="grid" class="grid"></div>
+ <p id="empty" class="empty" hidden>조건에 맞는 사례가 없습니다.</p>
+ <nav id="pager" class="pager" aria-label="페이지" hidden></nav>
+</main>
+</div>
+<section id="folderview" class="fv" aria-labelledby="fvh">
+ <p class="fvcrumb">쇼케이스 / 파일철 보기</p>
+ <h1 id="fvh" class="fvh"><i class="px" aria-hidden="true"><b></b><b></b><b></b></i>테마별 파일철</h1>
+ <p id="fvintro" class="fvintro" aria-live="polite"></p>
+ <hr class="fvrule">
+ <div id="fvq" class="fvq" hidden></div>
+ <div id="cab" class="cab"></div>
+</section>
+<div id="ov" class="ov" role="dialog" aria-modal="true" aria-label="사례 상세" hidden>
+ <div class="scrim" id="scrim"></div>
+ <div class="dlg">
+  <button class="x" id="x" type="button" aria-label="닫기">✕</button>
+  <div class="car" id="car"></div>
+  <div class="info" id="info"></div>
+ </div>
+</div>
+
+<script id="meta" type="application/json">{"date":"2026-10-27","updates":[{"date":"2026-10-27","count":39,"sites":["Tellart"],"note":""}],"last_updated":"2026-10-27","sites":1,"site_names":{"tellart":"Tellart"},"photos":155,"themes":["과학·기술","자연·생태·환경","역사·인물·기록","문화·예술·전통","사회·안전·진로","지역·관광·홍보"],"exps":["AI·생성형","AR·VR","게임형","대형 설치물","로봇·기계","모바일 연동","몰입형 영상","센서·데이터","소리·음악","손으로 만지는 체험","신체 움직임","오감 체험","터치·인터랙션"],"auds":["어린이","청소년","일반","가족"],"subthemes":[{"theme":"과학·기술","subs":["AI·인공지능","로봇·자동화","우주·천문","미래 기술·모빌리티","디지털·인터넷","과학 원리 체험"]},{"theme":"자연·생태·환경","subs":["기후변화·지속가능성","바다·물","생물다양성·생태계","지구·자연 현상","미래 식량·도시"]},{"theme":"역사·인물·기록","subs":["인물 이야기","왕실·국가 유산","기록·아카이브"]},{"theme":"문화·예술·전통","subs":["미술·작가","공예·전통문화","음악·소리 예술","영화·대중문화","어린이 예술 놀이"]},{"theme":"사회·안전·진로","subs":["공동체·소통","미래 사회·공공서비스","청소년·미래 진로","스포츠·건강"]},{"theme":"지역·관광·홍보","subs":["국가관·엑스포","국가·지역 브랜딩","관광·여행","기업·브랜드 홍보"]}]}</script>
+<script id="data" type="application/json">[{"id":"tellart/ai-game-show-with-sam","site":"tellart","url":"https://www.tellart.com/projects/ai-game-show-with-sam/","ko":"AI 캐릭터와 함께하는 게임쇼","orig":"AI Game Show with SAM","client":"CIIIC 2026, London Experience Week 2026","year":2026,"location":"네덜란드 위트레흐트, 영국 런던","status":"구현","summary":"약 300명이 AI 캐릭터 'SAM'과 함께 영화 예고편 줄거리를 만드는 참여형 게임쇼입니다. 각자 낸 의견을 AI가 모아 하나의 이야기로 엮습니다.","point":"많은 관객의 의견을 AI가 바로 한 이야기로 묶는 방식","theme":["과학·기술"],"exp":["AI·생성형","게임형","모바일 연동"],"aud":["일반","청소년"],"sub":["AI·인공지능","디지털·인터넷"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/under-one-hoop","site":"tellart","url":"https://www.tellart.com/projects/under-one-hoop/","ko":"언더 원 후프 – 3x3 농구 돔 체험","orig":"Under One Hoop","client":"3x3 Unites","year":2026,"location":"네덜란드 암스테르담","status":"구현","summary":"3x3 농구가 만드는 공동체와 가치를 보여 주는 인터랙티브 돔 체험입니다. 사흘 동안 1만 명이 넘게 찾았습니다.","point":"돔 안에서 몸을 움직여 함께 참여하는 스포츠 체험","theme":["사회·안전·진로"],"exp":["신체 움직임","몰입형 영상","게임형"],"aud":["청소년","가족"],"sub":["스포츠·건강","공동체·소통"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/netherlands-pavilion-at-world-expo-2025","site":"tellart","url":"https://www.tellart.com/projects/netherlands-pavilion-at-world-expo-2025/","ko":"2025 오사카 엑스포 네덜란드관","orig":"Netherlands Pavilion at World Expo 2025","client":"Ministry of Foreign Affairs, Netherlands / RVO","year":2025,"location":"일본 오사카","status":"구현","summary":"물과 싸우던 네덜란드가 물을 지속가능성의 힘으로 받아들이는 이야기를 4단계 체험으로 보여 줍니다. 관람객은 빛나는 구슬(오브)을 들고 다닙니다.","point":"손에 든 빛 구슬이 공간마다 반응하는 개인 체험 도구","theme":["자연·생태·환경","지역·관광·홍보"],"exp":["몰입형 영상","터치·인터랙션","대형 설치물"],"aud":["일반","가족"],"sub":["국가관·엑스포","기후변화·지속가능성","바다·물"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/philippine-pavilion-at-expo-2025-osaka","site":"tellart","url":"https://www.tellart.com/projects/philippine-pavilion-at-expo-2025-osaka/","ko":"2025 오사카 엑스포 필리핀관","orig":"Philippine Pavilion at World Expo 2025","client":"Philippine Department of Tourism / Tourism Promotions Board","year":2025,"location":"일본 오사카","status":"구현","summary":"필리핀의 문화와 자연을 전통 직물 작품과 몰입 영상으로 엮은 전시관입니다. 자연과 함께 춤추는 체험과 AI 사진 부스도 있습니다.","point":"전통 직조 작품과 디지털 영상을 한 공간에 섞음","theme":["문화·예술·전통","지역·관광·홍보","자연·생태·환경"],"exp":["몰입형 영상","AI·생성형","신체 움직임"],"aud":["일반","가족"],"sub":["국가관·엑스포","공예·전통문화","국가·지역 브랜딩"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/sam-ai-experience-nxt-museum","site":"tellart","url":"https://www.tellart.com/projects/sam-ai-experience-nxt-museum/","ko":"SAM AI 체험","orig":"SAM AI Experience","client":"Vivendi","year":2024,"location":"네덜란드 암스테르담(Nxt Museum)","status":"구현","summary":"관람객이 휴대폰으로 챗봇과 대화하면, AI가 사람과 AI의 관계에 대한 짧은 영화를 만들어 줍니다.","point":"내 대화가 나만의 영화가 되는 맞춤 결과물","theme":["과학·기술","문화·예술·전통"],"exp":["AI·생성형","모바일 연동","몰입형 영상"],"aud":["일반","청소년"],"sub":["AI·인공지능","영화·대중문화"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/dinner-in-2050-at-cop28","site":"tellart","url":"https://www.tellart.com/projects/dinner-in-2050-at-cop28/","ko":"2050년의 저녁 식사","orig":"Dinner in 2050 at COP28","client":"Salama bint Hamdan Al Nahyan Foundation (COP28)","year":2023,"location":"아랍에미리트 두바이(COP28)","status":"구현","summary":"AI가 식탁 위 음식을 미래 음식으로 바꿔 보여 주는 시각 게임입니다. 양고기 대신 메뚜기처럼, 기후를 위한 음식 선택을 생각하게 합니다.","point":"식탁이라는 친숙한 장면에 AI 영상을 덧입힌 작은 공간","theme":["자연·생태·환경","사회·안전·진로","과학·기술"],"exp":["AI·생성형","게임형","몰입형 영상"],"aud":["일반"],"sub":["미래 식량·도시","기후변화·지속가능성","AI·인공지능"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/the-race-below-one-blue-voice","site":"tellart","url":"https://www.tellart.com/projects/the-race-below-one-blue-voice/","ko":"레이스 빌로우 – 하나의 푸른 목소리","orig":"The Race Below – One Blue Voice","client":"11th Hour Racing / The Ocean Race","year":2022,"location":"오션 레이스 기항 도시 8곳","status":"구현","summary":"세계 일주 요트 경기 기항지에서 바다 생물을 지키자는 이야기를 몰입 공간으로 보여 주었습니다. 3만 2천 명이 넘는 사람이 바다 권리 선언 청원에 서명했습니다.","point":"체험 끝에 '서명'이라는 실제 행동으로 이어지게 한 마무리","theme":["자연·생태·환경","사회·안전·진로"],"exp":["몰입형 영상","터치·인터랙션"],"aud":["일반","가족"],"sub":["바다·물","생물다양성·생태계","기후변화·지속가능성"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/experience-center-at-ksa-ministry-of-tourism","site":"tellart","url":"https://www.tellart.com/projects/experience-center-at-ksa-ministry-of-tourism/","ko":"사우디 관광부 체험관","orig":"KSA Ministry of Tourism","client":"Saudi Building & Construction Management (SBCM)","year":2022,"location":"사우디아라비아 리야드","status":"구현","summary":"사우디 13개 지역의 모습을 4개의 몰입 공간으로 보여 주는 체험관입니다. 영상과 소리 등 여러 감각을 함께 씁니다.","point":"지역 특색을 네 개의 '세계'로 묶어 걸어 들어가게 한 구성","theme":["지역·관광·홍보"],"exp":["몰입형 영상","오감 체험"],"aud":["일반"],"sub":["관광·여행","국가·지역 브랜딩"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/house-of-artisans-making-emirati-craftsmanship-experiential","site":"tellart","url":"https://www.tellart.com/projects/house-of-artisans-making-emirati-craftsmanship-experiential/","ko":"장인의 집 – 아랍에미리트 공예 체험","orig":"House of Artisans","client":"House of Artisans (UAE)","year":2022,"location":"아랍에미리트 아부다비(카스르 알 호슨)","status":"구현","summary":"아부다비 전통 공예 센터의 상설 전시를 새로 만들었습니다. 엮어서 만든 마을 같은 공간을 걸으며 장인들의 이야기를 듣습니다.","point":"전통 재료(엮기)를 공간 디자인 자체로 쓴 점","theme":["문화·예술·전통","역사·인물·기록"],"exp":["손으로 만지는 체험","터치·인터랙션"],"aud":["일반","가족"],"sub":["공예·전통문화","인물 이야기"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/uae-pavilion-floriade-2022","site":"tellart","url":"https://www.tellart.com/projects/uae-pavilion-floriade-2022/","ko":"플로리아드 2022 '소금물 도시'","orig":"Saltwater Cities at Floriade 2022","client":"Salama bint Hamdan Al Nahyan Foundation","year":2022,"location":"네덜란드 알메러","status":"구현","summary":"사막 나라 아랍에미리트가 바닷물과 함께 사는 '녹색 도시'를 어떻게 만들지 보여 준 전시입니다. 사람의 움직임을 따라 반응하는 몰입형 방이 있습니다.","point":"관람객 움직임을 따라 반응하는 몰입 방","theme":["자연·생태·환경"],"exp":["몰입형 영상","신체 움직임","센서·데이터"],"aud":["일반"],"sub":["기후변화·지속가능성","바다·물","미래 식량·도시"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/uae-pavilion-at-expo-2020-dubai","site":"tellart","url":"https://www.tellart.com/projects/uae-pavilion-at-expo-2020-dubai/","ko":"2020 두바이 엑스포 아랍에미리트관","orig":"UAE Pavilion at World Expo 2020","client":"Ministry of Culture and Youth, UAE 외","year":2021,"location":"아랍에미리트 두바이","status":"구현","summary":"아랍에미리트의 과거·현재·미래와 나라의 가치를 여러 감각으로 보여 준 주최국관 관람 경험을 만들었습니다.","point":"나라의 가치와 미래 꿈을 하나의 이야기 여정으로 엮음","theme":["지역·관광·홍보","역사·인물·기록","문화·예술·전통"],"exp":["몰입형 영상","대형 설치물"],"aud":["일반","가족"],"sub":["국가관·엑스포","국가·지역 브랜딩","왕실·국가 유산"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/polish-pavilion-world-expo-2020","site":"tellart","url":"https://www.tellart.com/projects/polish-pavilion-world-expo-2020/","ko":"2020 두바이 엑스포 폴란드관","orig":"Polish Pavilion at World Expo 2020","client":"Polish Investment and Trade Agency","year":2021,"location":"아랍에미리트 두바이","status":"구현","summary":"목소리로 움직이는 '폴란드 식탁' 조형물이 중심인 전시관입니다. 자연에서 얻은 디자인과 손님을 반기는 문화를 보여 줍니다.","point":"목소리에 반응하는 함께 앉는 식탁","theme":["문화·예술·전통","지역·관광·홍보"],"exp":["소리·음악","대형 설치물","터치·인터랙션"],"aud":["일반"],"sub":["국가관·엑스포","음악·소리 예술","국가·지역 브랜딩"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/project-panacea-improving-social-distance","site":"tellart","url":"https://www.tellart.com/projects/project-panacea-improving-social-distance/","ko":"거리두기 시대의 연결 실험","orig":"Project Panacea: Improving Social Distance","client":"Tellart (자체 프로젝트)","year":2020,"location":"온라인","status":"제안","summary":"코로나 봉쇄 기간에 화상 통화로 사람들이 즐겁게 만나는 7가지 실험을 빠르게 만들었습니다. 화면 너머로 '하이파이브'를 하는 게임 등이 있습니다.","point":"떨어진 사람끼리 몸짓으로 연결되는 간단한 게임","theme":["사회·안전·진로","과학·기술"],"exp":["신체 움직임","게임형"],"aud":["일반","가족"],"sub":["공동체·소통","디지털·인터넷"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/van-gogh-dreams","site":"tellart","url":"https://www.tellart.com/projects/van-gogh-dreams/","ko":"반 고흐의 꿈","orig":"Van Gogh Dreams","client":"Van Gogh Museum Amsterdam","year":2018,"location":"네덜란드 암스테르담","status":"구현","summary":"반 고흐가 아를에서 보낸 1년의 마음 여정을 원화 없이 공간과 빛, 소리로 보여 준 전시입니다.","point":"원화 없이 그림 속 세계로 들어가는 방 구성","theme":["문화·예술·전통","역사·인물·기록"],"exp":["몰입형 영상","대형 설치물","소리·음악"],"aud":["일반","가족"],"sub":["미술·작가","인물 이야기"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/craftsmanship","site":"tellart","url":"https://www.tellart.com/projects/craftsmanship/","ko":"스마트폰 제작 과정을 보여 주는 로봇 설치","orig":"Craftsmanship","client":"Samsung / 2x4","year":2018,"location":"대한민국 평창(동계올림픽)","status":"구현","summary":"스마트폰이 알루미늄 덩어리에서 완성품이 되는 과정을 로봇과 기계가 직접 움직이며 보여 줍니다. 평창 동계올림픽 삼성 홍보관에 설치되었습니다.","point":"공장 과정을 로봇과 컨베이어로 '춤추듯' 보여 주는 움직이는 연출","theme":["과학·기술","지역·관광·홍보"],"exp":["로봇·기계","대형 설치물"],"aud":["일반"],"sub":["로봇·자동화","기업·브랜드 홍보"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/asian-art-made-interactive","site":"tellart","url":"https://www.tellart.com/projects/asian-art-made-interactive/","ko":"아시아 미술을 쉽게 만나는 체험","orig":"Asian Art Made Interactive","client":"Detroit Institute of Arts","year":2018,"location":"미국 디트로이트","status":"구현","summary":"일본·중국·인도 전시실에 작품을 더 깊이 이해하도록 돕는 체험을 넣었습니다. 4시간 걸리는 다도를 5분으로 줄이고, 9m가 넘는 두루마리를 화면으로 넘겨 봅니다.","point":"보호 때문에 다 펼칠 수 없는 유물을 화면으로 끝까지 보여 주기","theme":["역사·인물·기록","문화·예술·전통"],"exp":["터치·인터랙션","몰입형 영상"],"aud":["일반","가족"],"sub":["미술·작가","공예·전통문화","기록·아카이브"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/an-intuitive-exploration-of-art-making","site":"tellart","url":"https://www.tellart.com/projects/an-intuitive-exploration-of-art-making/","ko":"아이들의 미술 놀이 공간","orig":"An Intuitive Exploration of Art-Making","client":"de Young, Fine Arts Museums of San Francisco","year":2018,"location":"미국 샌프란시스코","status":"구현","summary":"2~10세 어린이와 가족을 위한 무료 미술 놀이 공간입니다. 아이들이 직접 만지고 놀면서 미술을 만드는 과정을 경험합니다.","point":"여러 나이의 아이들과 여러 번 시험해서 다듬은 쉬운 인터랙션","theme":["문화·예술·전통"],"exp":["터치·인터랙션","손으로 만지는 체험"],"aud":["어린이","가족"],"sub":["어린이 예술 놀이","미술·작가"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/an-emotionally-intelligent-autonomous-car","site":"tellart","url":"https://www.tellart.com/projects/an-emotionally-intelligent-autonomous-car/","ko":"마음을 읽는 자율주행차","orig":"An Emotionally Intelligent Autonomous Car","client":"Toyota","year":2017,"location":"미국 라스베이거스(CES)","status":"구현","summary":"사람과 마음을 나누는 미래 자율주행차 'Concept-i'의 전시 체험입니다. 차의 빛, 소리, 화면이 하나의 이야기처럼 함께 움직이도록 만들었습니다.","point":"실물 자동차에 빛·소리·화면을 묶어 '성격'을 보여 주는 연출","theme":["과학·기술","지역·관광·홍보"],"exp":["대형 설치물","센서·데이터","터치·인터랙션"],"aud":["일반"],"sub":["미래 기술·모빌리티","AI·인공지능","기업·브랜드 홍보"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/queen-maud","site":"tellart","url":"https://www.tellart.com/projects/queen-maud/","ko":"모드 왕비의 앨범 전시","orig":"Queen Maud’s Album Exhibition","client":"The Royal Palace of Norway","year":2017,"location":"노르웨이 오슬로","status":"구현","summary":"노르웨이 모드 왕비의 드레스 6벌을 3D로 스캔해 높이 20m 영상 속에서 움직이게 했습니다. 옛 사진과 음악이 함께 나옵니다.","point":"높고 좁은 옛 건물(건초 창고)을 살린 20m 세로 영상","theme":["역사·인물·기록","문화·예술·전통"],"exp":["몰입형 영상","소리·음악"],"aud":["일반"],"sub":["왕실·국가 유산","인물 이야기","기록·아카이브"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/deep-future-star-charts-for-the-next-100000-years","site":"tellart","url":"https://www.tellart.com/projects/deep-future-star-charts-for-the-next-100000-years/","ko":"앞으로 10만 년의 별자리","orig":"Deep Future: Star Charts for the Next 100,000 Years","client":"Tellart X Droog","year":2017,"location":"네덜란드 암스테르담, 브라질 리우데자네이루","status":"구현","summary":"앞으로 1만 년마다 밤하늘 별자리가 어떻게 바뀌는지 보여 주는 별 지도 전시입니다. 전통 제작 기법과 미래 연구를 섞었습니다.","point":"아주 긴 시간(10만 년)을 별 지도 몇 장으로 한눈에 보여 줌","theme":["과학·기술","문화·예술·전통"],"exp":["대형 설치물"],"aud":["일반"],"sub":["우주·천문","미술·작가"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/our-future-life-with-intelligent-machines","site":"tellart","url":"https://www.tellart.com/projects/our-future-life-with-intelligent-machines/","ko":"지능형 기계와 함께하는 미래 생활","orig":"Our Future Life with Intelligent Machines","client":"Dubai Future Foundation","year":2017,"location":"아랍에미리트 두바이(세계정부정상회의)","status":"구현","summary":"AI와 로봇이 사람의 삶을 어떻게 바꿀지 보여 준 1,000㎡ 규모의 미래 전시입니다. 다보스 세계경제포럼에서도 다시 전시했습니다.","point":"미래 생활 장면을 실제 방처럼 꾸며 걸어 들어가게 함","theme":["과학·기술","사회·안전·진로"],"exp":["대형 설치물","로봇·기계","몰입형 영상"],"aud":["일반"],"sub":["AI·인공지능","로봇·자동화","미래 사회·공공서비스"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/how-nature-uses-color","site":"tellart","url":"https://www.tellart.com/projects/how-nature-uses-color/","ko":"자연이 색을 쓰는 법","orig":"How Nature Uses Color","client":"California Academy of Sciences","year":2014,"location":"미국 샌프란시스코","status":"구현","summary":"자연 속 색의 역할을 다룬 상설 전시의 중심 체험물입니다. 4,600만 점 표본의 이야기를 큰 화면과 조명으로 찾아봅니다.","point":"실물 표본과 디지털 화면을 이어 100가지가 넘는 이야기 탐색","theme":["과학·기술","자연·생태·환경"],"exp":["터치·인터랙션","몰입형 영상"],"aud":["어린이","가족","일반"],"sub":["생물다양성·생태계","과학 원리 체험"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/chrome-web-lab-making-the-internet-physical","site":"tellart","url":"https://www.tellart.com/projects/chrome-web-lab-making-the-internet-physical/","ko":"인터넷을 눈으로 보는 실험실","orig":"Chrome Web Lab: Making the Internet Physical","client":"Google & Science Museum London","year":2012,"location":"영국 런던(과학박물관)","status":"구현","summary":"인터넷이 어떻게 움직이는지 보여 주는 '실험'들을 런던 과학박물관에서 1년 동안 운영했습니다. 박물관 관람객과 온라인 사용자가 함께 실험에 참여했습니다.","point":"어려운 과학 원리를 기계 장치와 '실험' 형식으로 손에 잡히게 표현","theme":["과학·기술"],"exp":["로봇·기계","터치·인터랙션","모바일 연동"],"aud":["일반","청소년","가족"],"sub":["디지털·인터넷","과학 원리 체험"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/designing-planets-with-machine-learning","site":"tellart","url":"https://www.tellart.com/projects/designing-planets-with-machine-learning/","ko":"AI로 행성 땅 모양 만들기","orig":"Designing Planets with Machine Learning","client":"V&A Museum","year":null,"location":"영국 런던","status":"구현","summary":"관람객이 손으로 모래를 쌓고 파면 AI가 바다·산·해안선을 그려 넣는 '테라폼 테이블'입니다. 지구를 바꾸는 일을 놀이처럼 생각하게 합니다.","point":"모래를 만지면 그 위에 지형 영상이 바로 비치는 모래 테이블","theme":["과학·기술","자연·생태·환경"],"exp":["손으로 만지는 체험","AI·생성형","터치·인터랙션"],"aud":["어린이","가족","일반"],"sub":["AI·인공지능","지구·자연 현상","과학 원리 체험"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/good-design-in-the-wild","site":"tellart","url":"https://www.tellart.com/projects/good-design-in-the-wild/","ko":"거리에 놓인 의자 따라가기","orig":"Good Design in the Wild","client":"Blu Dot","year":null,"location":"미국 뉴욕","status":"구현","summary":"뉴욕 거리 곳곳에 의자를 두고, 사람들이 집으로 가져가는 길을 GPS로 따라간 홍보 실험입니다.","point":"물건에 위치 추적기를 달아 이야기를 만드는 방식","theme":["문화·예술·전통","지역·관광·홍보"],"exp":["센서·데이터"],"aud":["일반"],"sub":["기업·브랜드 홍보","공예·전통문화"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/climate-change-reimagined","site":"tellart","url":"https://www.tellart.com/projects/climate-change-reimagined/","ko":"기후변화 다시 상상하기","orig":"Climate Change Reimagined","client":"Dubai Future Foundation","year":null,"location":"아랍에미리트 두바이(세계정부정상회의)","status":"구현","summary":"2050년, 사람들이 기후변화를 이겨 내고 새롭게 사는 미래를 보여 준 전시입니다. 원통형 극장에서 360° 소개 영상을 틀었습니다.","point":"프로젝터 5대로 만든 360° 원통 소개 영상관","theme":["자연·생태·환경","사회·안전·진로"],"exp":["몰입형 영상","대형 설치물"],"aud":["일반"],"sub":["기후변화·지속가능성","미래 식량·도시"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/a-social-machine-connecting-strangers","site":"tellart","url":"https://www.tellart.com/projects/a-social-machine-connecting-strangers/","ko":"낯선 사람을 이어 주는 커피 기계","orig":"A Social Machine Connecting Strangers","client":"Singapore Economic Development Board","year":null,"location":"국제 비즈니스 회의장","status":"구현","summary":"처음 만난 두 사람이 짝을 지어 대화를 시작해야 커피가 나오는 기계입니다. 국제 회의에서 사람들이 자연스럽게 인사하게 만들었습니다.","point":"두 사람이 함께해야만 작동하는 '같이 누르기' 방식","theme":["사회·안전·진로"],"exp":["손으로 만지는 체험","로봇·기계"],"aud":["일반"],"sub":["공동체·소통"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/sensing-music-in-the-new-york-streetscape","site":"tellart","url":"https://www.tellart.com/projects/sensing-music-in-the-new-york-streetscape/","ko":"뉴욕 거리 소리를 음악으로","orig":"Sensing Music in the New York Streetscape","client":"Parsons, The New School for Design","year":null,"location":"미국 뉴욕","status":"구현","summary":"카메라와 센서가 달린 벽이 거리의 택시, 공사 소리, 비를 느껴 차분한 음악과 빛으로 바꿉니다. 10일 동안 온라인으로도 생중계했습니다.","point":"날씨·소음 같은 주변 정보를 음악으로 바꾸는 장치","theme":["과학·기술","문화·예술·전통"],"exp":["센서·데이터","소리·음악"],"aud":["일반"],"sub":["음악·소리 예술","디지털·인터넷"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/the-arc","site":"tellart","url":"https://www.tellart.com/projects/the-arc/","ko":"디 아크 방문자센터","orig":"The Arc","client":"Snøhetta / Piql","year":null,"location":"노르웨이 스발바르","status":"제안","summary":"북극 스발바르에 있는 세계 디지털 기록 보관소와 종자 저장고를 알리는 방문자센터 콘셉트입니다. 실제 저장고처럼 4°C로 맞춘 방도 제안했습니다.","point":"직접 갈 수 없는 시설을 체험관으로 옮겨 오기, 온도까지 체험","theme":["역사·인물·기록","자연·생태·환경"],"exp":["대형 설치물","오감 체험","몰입형 영상"],"aud":["일반"],"sub":["기록·아카이브","생물다양성·생태계"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/prototyping-the-future-city","site":"tellart","url":"https://www.tellart.com/projects/prototyping-the-future-city/","ko":"미래 도시 미리 만들기","orig":"Prototyping the Future City","client":"Prime Minister’s Office, UAE","year":null,"location":"아랍에미리트 두바이(세계정부정상회의)","status":"구현","summary":"실제 크기의 '스마트 거리'를 만들어 미래 정부 서비스를 보여 준 전시입니다. 향과 맛까지 써서 미래 도시에 들어간 느낌을 줍니다.","point":"실물 크기 거리 세트와 향·맛 오감 연출","theme":["사회·안전·진로","과학·기술","자연·생태·환경"],"exp":["대형 설치물","오감 체험","터치·인터랙션"],"aud":["일반"],"sub":["미래 사회·공공서비스","미래 식량·도시"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/future-government-services","site":"tellart","url":"https://www.tellart.com/projects/future-government-services/","ko":"미래 정부 서비스","orig":"Future Government Services","client":"Prime Minister’s Office, UAE","year":null,"location":"아랍에미리트 두바이(세계정부정상회의)","status":"구현","summary":"2025년을 배경으로 정부 서비스가 어떻게 바뀔지 보여 준 전시입니다. 이 전시가 두바이 '미래박물관'을 만드는 계기가 되었습니다.","point":"미래의 물건·서비스를 실제 상품처럼 진열한 '미래에서 온 전시'","theme":["사회·안전·진로","과학·기술"],"exp":["대형 설치물","터치·인터랙션"],"aud":["일반"],"sub":["미래 사회·공공서비스","미래 기술·모빌리티"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/fly-a-plane-with-your-mind","site":"tellart","url":"https://www.tellart.com/projects/fly-a-plane-with-your-mind/","ko":"생각으로 비행기 조종하기","orig":"Fly a Plane with your Mind","client":"S7 Airlines","year":null,"location":"러시아 모스크바(쇼핑몰)","status":"구현","summary":"뇌파 기기를 쓰고 집중하는 힘만으로 가상 비행기를 조종하는 이벤트입니다. 성공하면 꿈의 여행지 항공권을 받았습니다.","point":"뇌파(집중력)로 조종하는 신기한 체험과 경품 동기","theme":["과학·기술","지역·관광·홍보"],"exp":["센서·데이터","게임형","몰입형 영상"],"aud":["일반","청소년"],"sub":["미래 기술·모빌리티","기업·브랜드 홍보","관광·여행"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/celebrating-biodiversity-biomuseo","site":"tellart","url":"https://www.tellart.com/projects/celebrating-biodiversity-biomuseo/","ko":"생물다양성 전시","orig":"Celebrating Biodiversity","client":"Biomuseo Panama","year":null,"location":"파나마","status":"구현","summary":"프랭크 게리가 설계한 박물관의 세 전시실 체험을 만들었습니다. 깊은 바다에서 열대 숲까지 이어지는 여정을 프로젝터 25대로 보여 줍니다.","point":"프로젝터 25대를 이어 붙인 하나의 큰 몰입 공간","theme":["자연·생태·환경"],"exp":["몰입형 영상","대형 설치물","터치·인터랙션"],"aud":["일반","가족"],"sub":["생물다양성·생태계","바다·물"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/teleportation-binoculars","site":"tellart","url":"https://www.tellart.com/projects/teleportation-binoculars/","ko":"순간이동 망원경","orig":"Teleportation Binoculars","client":"Google & Sydney Opera House","year":null,"location":"호주 시드니","status":"구현","summary":"관광지 망원경을 들여다보면 스트리트뷰로 세계 40곳의 풍경이 보입니다. 시드니 오페라하우스 40주년 행사로 6개월 동안 운영했습니다.","point":"익숙한 관광 망원경 속에 '다른 장소'가 보이는 반전","theme":["지역·관광·홍보","과학·기술"],"exp":["AR·VR","손으로 만지는 체험"],"aud":["일반","가족"],"sub":["관광·여행","디지털·인터넷","기업·브랜드 홍보"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/autonomous-portrait-artist","site":"tellart","url":"https://www.tellart.com/projects/autonomous-portrait-artist/","ko":"스스로 초상화를 그리는 로봇","orig":"Autonomous Portrait Artist","client":"Visionaire Magazine","year":null,"location":"미국 뉴욕(Cadillac House)","status":"구현","summary":"관람객이 앉으면 그림 로봇 'ADA'가 초상화를 그려 줍니다. 사람과 기계의 창의성에 대해 생각하게 하는 전시입니다.","point":"관람객이 기념품(내 초상화)을 들고 가는 체험, 2시간 넘는 대기 줄","theme":["과학·기술","문화·예술·전통"],"exp":["로봇·기계"],"aud":["일반"],"sub":["로봇·자동화","미술·작가","AI·인공지능"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/sit-spot-reconnecting-with-the-living-world","site":"tellart","url":"https://www.tellart.com/projects/sit-spot-reconnecting-with-the-living-world/","ko":"싯 스팟 – 자연과 다시 연결되기","orig":"Sit Spot – Reconnecting with the Living World","client":"Oregon Museum of Science and Industry (OMSI)","year":null,"location":"미국 포틀랜드(오리건)","status":"구현","summary":"미국 북서부의 풍경과 생태계를 담은 몰입형 영상·소리 설치입니다. 원주민 문화 자문과 과학 내용을 함께 담았습니다.","point":"조용히 앉아 자연을 느끼는 '쉬어 가는' 공간","theme":["자연·생태·환경"],"exp":["몰입형 영상","소리·음악"],"aud":["일반","가족"],"sub":["생물다양성·생태계","지구·자연 현상"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/immersive-experience-for-alita-battle-angel-film-launch","site":"tellart","url":"https://www.tellart.com/projects/immersive-experience-for-alita-battle-angel-film-launch/","ko":"영화 '알리타' 몰입 체험","orig":"Immersive Experience for Alita: Battle Angel Film Launch","client":"iam8bit / The Seelig Group","year":null,"location":"미국 LA·오스틴·뉴욕","status":"구현","summary":"영화 속 미래 도시로 들어가 팀을 이뤄 미션을 푸는 건물 크기의 게임 공간입니다. 6명씩 8~10팀이 동시에 겨룹니다.","point":"팀 미션 게임으로 공간 전체를 하나의 놀이터로 만듦","theme":["문화·예술·전통","지역·관광·홍보"],"exp":["게임형","신체 움직임","대형 설치물"],"aud":["청소년","일반"],"sub":["영화·대중문화","기업·브랜드 홍보"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/the-challenge-museum","site":"tellart","url":"https://www.tellart.com/projects/the-challenge-museum/","ko":"챌린지 뮤지엄","orig":"The Challenge Museum","client":"UNStudio","year":null,"location":"대한민국","status":"제안","summary":"한국 청소년이 미래를 만드는 힘을 느끼도록 기획한 3층 박물관 제안입니다. 동원 창업자가 지도를 거꾸로 본 이야기에서 '관점 바꾸기'를 핵심으로 삼았습니다.","point":"'지도를 뒤집어 보기' 같은 한 줄 아이디어로 전체 동선을 만듦","theme":["사회·안전·진로","과학·기술","역사·인물·기록"],"exp":["AR·VR","대형 설치물"],"aud":["청소년"],"sub":["청소년·미래 진로","인물 이야기"],"is_new":true,"added":"2026-10-27"},{"id":"tellart/sunrise-explorer-ai-experience","site":"tellart","url":"https://www.tellart.com/projects/sunrise-explorer-ai-experience/","ko":"해돋이 탐험가","orig":"Sunrise Explorer","client":"Prosus","year":null,"location":"","status":"구현","summary":"관람객이 상상한 해돋이를 AI가 그려 주고, 그 해돋이를 볼 수 있는 실제 장소를 찾아 줍니다.","point":"AI 캐릭터와 대화하며 나만의 장면을 만드는 흐름","theme":["과학·기술","지역·관광·홍보"],"exp":["AI·생성형","몰입형 영상"],"aud":["일반"],"sub":["AI·인공지능","관광·여행","기업·브랜드 홍보"],"is_new":true,"added":"2026-10-27"}]</script>
+<script id="imgs" type="application/json">{"tellart/ai-game-show-with-sam":{"t":"img/506bc2cd0488c772.webp","w":400,"h":267,"d":["img/c5a123582ad98f18.webp","img/a240fa379dc8958b.webp","img/ee857ece3cc4a219.webp","img/1123005f25e92f17.webp"]},"tellart/under-one-hoop":{"t":"img/43fbca150c28b55b.webp","w":400,"h":267,"d":["img/49546bed14248262.webp","img/284511fad1bfedf9.webp","img/71cb224eadc01963.webp","img/fb044e7ca0508967.webp"]},"tellart/netherlands-pavilion-at-world-expo-2025":{"t":"img/a18e4c252ca89fa3.webp","w":400,"h":257,"d":["img/a18c561f398f6376.webp","img/edcf58d99dc5df85.webp","img/dcb699c691ae8df4.webp","img/004a88f6677e4cfc.webp"]},"tellart/philippine-pavilion-at-expo-2025-osaka":{"t":"img/5e1005b293782880.webp","w":400,"h":243,"d":["img/496ba4308893c27c.webp","img/229d67bf6c1b8a48.webp","img/2343a8bf01a855dc.webp","img/0ba36defbf911a8c.webp"]},"tellart/sam-ai-experience-nxt-museum":{"t":"img/48ee1697f2425185.webp","w":400,"h":267,"d":["img/0588d973c481bd10.webp","img/b22c8ffa8b80f12c.webp","img/560884bcb9c3edb5.webp","img/ffec84225016372a.webp"]},"tellart/dinner-in-2050-at-cop28":{"t":"img/2998e13530c030e7.webp","w":400,"h":262,"d":["img/fbce430e3f0ce6af.webp","img/7725c11a50f249b0.webp","img/4e8eae367fb08669.webp","img/1673abde694a7e66.webp"]},"tellart/the-race-below-one-blue-voice":{"t":"img/b5668f78f290a357.webp","w":400,"h":283,"d":["img/23281cc0c48f810f.webp","img/8a2f859eac3ab87c.webp","img/698da71cc9dd830b.webp","img/23945849e3be0443.webp"]},"tellart/experience-center-at-ksa-ministry-of-tourism":{"t":"img/731f92f516ad596c.webp","w":400,"h":225,"d":["img/a88adc51ce3ad971.webp","img/4c41c276adee125e.webp","img/c66664aa4b493cab.webp","img/7ef7794991de3b11.webp"]},"tellart/house-of-artisans-making-emirati-craftsmanship-experiential":{"t":"img/8d80309762f2b1f6.webp","w":400,"h":300,"d":["img/918bd968dbd3c759.webp","img/46b6bb9d2ae7d289.webp","img/454bf55a5d7bbc7e.webp","img/b698a19c373aa6c7.webp"]},"tellart/uae-pavilion-floriade-2022":{"t":"img/cf093cf54646c76b.webp","w":400,"h":230,"d":["img/6deda07d6ecb4a5c.webp","img/83d976e9a19c41bd.webp","img/fef6c3160c8a44dc.webp","img/93abdc84c56c8e30.webp"]},"tellart/uae-pavilion-at-expo-2020-dubai":{"t":"img/add70b7cd47ed9ca.webp","w":400,"h":285,"d":["img/18ac6c6bcc6883ac.webp","img/620d2ff597fef126.webp","img/4ebf3aecb44d9193.webp","img/218f1bbb19e9d243.webp"]},"tellart/polish-pavilion-world-expo-2020":{"t":"img/b71ba048050839bf.webp","w":400,"h":400,"d":["img/69d20abee7abcfb9.webp","img/1486ec7ecb4e6cd2.webp","img/a0c44a02f8a1d36f.webp","img/b781331490fec62e.webp"]},"tellart/project-panacea-improving-social-distance":{"t":"img/af0ee103c3442151.webp","w":400,"h":225,"d":["img/87737f4e7a238155.webp","img/5aa9b1d10ebcf4de.webp","img/d8b252f5318f24d9.webp","img/f63977c767255784.webp"]},"tellart/van-gogh-dreams":{"t":"img/51e52a8e04087c64.webp","w":400,"h":264,"d":["img/b5f4c2d543e4ce89.webp","img/2cb621457bb308d3.webp","img/c1f48d8cbeeaa69c.webp","img/ac1ad5ff5c3f40b1.webp"]},"tellart/craftsmanship":{"t":"img/ff2563b0a31d0805.webp","w":400,"h":267,"d":["img/c0242b6d31b5e5a4.webp","img/0b98c43604d39f71.webp","img/f8b157af2c1b446d.webp","img/82765ced359b30a5.webp"]},"tellart/asian-art-made-interactive":{"t":"img/783a4f2dcce0575e.webp","w":400,"h":266,"d":["img/7b40f278f5220f96.webp","img/861ac610cf4020e4.webp","img/cf3b99613f129aef.webp","img/1168974de54d9b74.webp"]},"tellart/an-intuitive-exploration-of-art-making":{"t":"img/a79ba2db74578b24.webp","w":400,"h":600,"d":["img/2e37574ce363fbbc.webp","img/6e7a54a3bf10f60e.webp","img/0ac29fb525084908.webp","img/0386fbc19f4f000b.webp"]},"tellart/an-emotionally-intelligent-autonomous-car":{"t":"img/ae99e8059d1ec32f.webp","w":400,"h":198,"d":["img/6905ccf58a7e8e43.webp","img/bb159260becb43e0.webp","img/77ecba7b95330a76.webp","img/227686924c5c3fc1.webp"]},"tellart/queen-maud":{"t":"img/c4c55a5232712c4d.webp","w":400,"h":222,"d":["img/9007ddabab080704.webp","img/d21187058dc8d548.webp","img/00bdf5b6ed7f8ea6.webp","img/0b5e4f5d6ca5fc5e.webp"]},"tellart/deep-future-star-charts-for-the-next-100000-years":{"t":"img/19ed8c47963e2e55.webp","w":400,"h":225,"d":["img/86ec480749406e4a.webp","img/f74542b6a142f65d.webp","img/0c56fb13c511dfbc.webp","img/a0e36a621e7b1637.webp"]},"tellart/our-future-life-with-intelligent-machines":{"t":"img/ea4ea70edbe1a252.webp","w":400,"h":267,"d":["img/db52e309b0ad6ea8.webp","img/9f7fc2aa90c8282f.webp","img/8b46fabb959d7753.webp","img/55bf75ad48529806.webp"]},"tellart/how-nature-uses-color":{"t":"img/b789fd82cb824722.webp","w":400,"h":266,"d":["img/e0086aab86744737.webp","img/9d9c14ad59e84f59.webp","img/e26ef4e52f198752.webp","img/5bdf27a7d9d6c8f0.webp"]},"tellart/chrome-web-lab-making-the-internet-physical":{"t":"img/3433482a20ccde55.webp","w":400,"h":280,"d":["img/311b3a3000a9e8d8.webp","img/5c6442c9402d6c78.webp","img/240fea4ac4345c43.webp","img/9131e47cd7779331.webp"]},"tellart/designing-planets-with-machine-learning":{"t":"img/d56f51b438e787c0.webp","w":400,"h":267,"d":["img/733dea2f3bd7d1d6.webp","img/879421be4b69db82.webp","img/6a7725deb0a4630e.webp","img/d13c94f7d9e1a5cb.webp"]},"tellart/good-design-in-the-wild":{"t":"img/e97961b83f9a0b18.webp","w":400,"h":299,"d":["img/613c9522598192c5.webp","img/c117438280c83c4f.webp","img/38910e66553aee85.webp","img/eb243bdf1b3b0e88.webp"]},"tellart/climate-change-reimagined":{"t":"img/5de41244fdfe49e8.webp","w":400,"h":266,"d":["img/f91c068decc29923.webp","img/002c6738a421c3d6.webp","img/27cf3b99f7cbf552.webp","img/50a3a49e676d2cdd.webp"]},"tellart/a-social-machine-connecting-strangers":{"t":"img/d7d6852ef292d8ec.webp","w":400,"h":267,"d":["img/9d76b93d293456bd.webp","img/4129d84daec7835c.webp","img/a1e0ffaf58aa014c.webp","img/d79feb705d8f4bae.webp"]},"tellart/sensing-music-in-the-new-york-streetscape":{"t":"img/4ac3c07f71c946d8.webp","w":400,"h":315,"d":["img/6b7c435e13974bd2.webp","img/24e7558557b90a80.webp","img/d4fea9b3bf32e970.webp","img/f7ceb28fcf154d6f.webp"]},"tellart/the-arc":{"t":"img/ad196d58640134ab.webp","w":400,"h":477,"d":["img/0628b30a12494c84.webp","img/b4d8e63df3946931.webp","img/0e0f779417b1c009.webp","img/f995d78fe906aa1b.webp"]},"tellart/prototyping-the-future-city":{"t":"img/57547af92647a416.webp","w":400,"h":267,"d":["img/1d11ac83c014d9c5.webp","img/71099870176a4d77.webp","img/73c8bbdee471af91.webp","img/8b9882298e009d17.webp"]},"tellart/future-government-services":{"t":"img/059aeb6137cebfd0.webp","w":400,"h":271,"d":["img/0d55d07bdf982ce0.webp","img/503c17d0bb7ad4c4.webp","img/12bb3b8eb51e2df0.webp","img/8b99980b235e18e5.webp"]},"tellart/fly-a-plane-with-your-mind":{"t":"img/f5fe133ee229ce64.webp","w":400,"h":236,"d":["img/a84bb90ff685517d.webp","img/ebb38093f25e0440.webp","img/81c5218d5b74a31c.webp","img/0c1c99b344e875a9.webp"]},"tellart/celebrating-biodiversity-biomuseo":{"t":"img/2ec34b3695029f96.webp","w":400,"h":267,"d":["img/4d9590c0b1eb7d1e.webp","img/bd9c0641daf1e98b.webp","img/b599abd2a96c1d32.webp","img/35ea7630975b58fb.webp"]},"tellart/teleportation-binoculars":{"t":"img/7a716b0a033d04ce.webp","w":400,"h":259,"d":["img/a52116bc65bcecdb.webp","img/b2cbb16088eb3353.webp","img/9771af1d10f9ac13.webp","img/d6b24777dd6575ce.webp"]},"tellart/autonomous-portrait-artist":{"t":"img/b5e44d9cb1543bf8.webp","w":400,"h":516,"d":["img/d78f636f63677f0e.webp","img/f1ccc63fce517b2b.webp","img/2b1d103c415f041d.webp"]},"tellart/sit-spot-reconnecting-with-the-living-world":{"t":"img/cb93e526691e729e.webp","w":400,"h":272,"d":["img/2dbd9077f1a95a17.webp","img/c4ada5f3b5eb2338.webp","img/60b272d0d2ec5782.webp","img/2924abb72ec16899.webp"]},"tellart/immersive-experience-for-alita-battle-angel-film-launch":{"t":"img/c12cd12a65c1868a.webp","w":400,"h":267,"d":["img/2eee4900830cfbf3.webp","img/83f191309f9c4f73.webp","img/87f4be7edcd54be5.webp","img/c0e259e9b24d6594.webp"]},"tellart/the-challenge-museum":{"t":"img/4cbc2059674f0396.webp","w":400,"h":284,"d":["img/fac9584f1244a14a.webp","img/dc0f44dccb4cdded.webp","img/8a515c642986922c.webp","img/021cd30361464182.webp"]},"tellart/sunrise-explorer-ai-experience":{"t":"img/9ab1f2ef5293a9bc.webp","w":400,"h":225,"d":["img/d27a14bf702a5175.webp","img/923d90f91978e725.webp","img/ca0e7a357f4d580c.webp","img/8834a3d542a550a2.webp"]}}</script>
+<script>
+(function(){
+"use strict";
+var META=JSON.parse(document.getElementById("meta").textContent);
+var CASES=JSON.parse(document.getElementById("data").textContent);
+var IMG=JSON.parse(document.getElementById("imgs").textContent);
+var $=function(id){return document.getElementById(id)};
+// el(tag, class, text) -- text always via textContent
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+var hasNew=CASES.some(function(c){return c.is_new});
+var GROUPS=[
+ {key:"theme",label:"테마",field:"theme",opts:META.themes.map(function(v){return{v:v,l:v}})},
+ {key:"exp",label:"체험 방식",field:"exp",opts:META.exps.map(function(v){return{v:v,l:v}})},
+ {key:"aud",label:"대상",field:"aud",opts:META.auds.map(function(v){return{v:v,l:v}})}
+];
+var BMG={key:"bm",label:"북마크"};
+var state=freshState();
+var PER_KEY="showcase-perpage",PER=40,PAGE=1;
+try{var _pp=parseInt(localStorage.getItem(PER_KEY),10);if(_pp===20||_pp===40||_pp===80)PER=_pp}catch(e){}
+function freshState(){return{q:"",theme:[],sub:[],exp:[],aud:[],bm:false,onlyNew:false}}
+
+function values(c,field){return c[field]}
+// searchable text per case
+CASES.forEach(function(c){
+ c._s=[c.ko,c.orig,c.client,c.location,c.summary,c.point,c.status,c.theme.join(" "),c.sub.join(" "),c.exp.join(" "),c.aud.join(" ")].join(" ").toLowerCase();
+});
+// sub-themes per broad theme (only those with at least one case)
+var SUBCNT={},CASEIDS={},SUBS={};
+CASES.forEach(function(c){CASEIDS[c.id]=1;c.sub.forEach(function(x){SUBCNT[x]=(SUBCNT[x]||0)+1})});
+META.subthemes.forEach(function(t){SUBS[t.theme]=t.subs.filter(function(x){return SUBCNT[x]})});
+
+/* ---------- update history popover ---------- */
+function fmtDate(d){return String(d||"").replace(/-/g,".")}
+(function(){
+ var btn=$("hist"),pop=$("histpop");if(!btn||!pop)return;
+ pop.appendChild(el("p","ht","마지막 업데이트 "+fmtDate(META.last_updated)));
+ var ul=el("ul");
+ (META.updates||[]).forEach(function(u){
+  var li=el("li");li.appendChild(el("b",null,fmtDate(u.date)+" · "+u.count+"개 사례 추가"));
+  var sub=(u.sites||[]).join(", ");if(u.note)sub=sub?sub+" — "+u.note:u.note;
+  if(sub)li.appendChild(el("span",null,sub));ul.appendChild(li)});
+ pop.appendChild(ul);
+ function setOpen(o){pop.hidden=!o;btn.setAttribute("aria-expanded",o?"true":"false")}
+ btn.addEventListener("click",function(e){e.stopPropagation();setOpen(pop.hidden)});
+ document.addEventListener("click",function(e){if(!pop.hidden&&!pop.contains(e.target))setOpen(false)});
+ document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&!pop.hidden&&$("ov").hidden){setOpen(false);btn.focus()}});
+})();
+
+/* ---------- filters ---------- */
+var NS="http://www.w3.org/2000/svg";
+function svgIcon(d){var s=document.createElementNS(NS,"svg");s.setAttribute("viewBox","0 0 24 24");s.setAttribute("fill","none");
+ s.setAttribute("stroke","currentColor");s.setAttribute("stroke-width","2");s.setAttribute("stroke-linecap","round");s.setAttribute("stroke-linejoin","round");
+ s.setAttribute("aria-hidden","true");var p=document.createElementNS(NS,"path");p.setAttribute("d",d);s.appendChild(p);return s}
+function chev(){return svgIcon("M6 9l6 6 6-6")}
+
+/* ---------- bookmarks (localStorage "showcase-bookmarks") ---------- */
+var BM_KEY="showcase-bookmarks",BM=Object.create(null),bmMsg="";
+function bmLoad(){
+ try{var o=JSON.parse(localStorage.getItem(BM_KEY)||"null");
+  if(o&&o.v===1&&o.ids&&typeof o.ids==="object")Object.keys(o.ids).forEach(function(k){if(typeof o.ids[k]==="string")BM[k]=o.ids[k]})}catch(e){}}
+function bmSave(){try{localStorage.setItem(BM_KEY,JSON.stringify({v:1,ids:BM}))}catch(e){}}
+bmLoad();
+function bmHas(id){return !!BM[id]}
+function bmCount(){var n=0;Object.keys(BM).forEach(function(k){if(CASEIDS[k])n++});return n}
+function bmSet(b){var on=bmHas(b.dataset.id);b.setAttribute("aria-pressed",on?"true":"false");
+ var l=on?"북마크 해제":"북마크 추가";b.setAttribute("aria-label",l);b.title=l}
+function bmSyncAll(pop,id){
+ Array.prototype.forEach.call(document.querySelectorAll(".bm"),function(b){bmSet(b);
+  if(pop&&b.dataset.id===id){b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");setTimeout(function(){b.classList.remove("pop")},300)}})}
+function bmToggle(id){
+ if(BM[id])delete BM[id];else BM[id]=new Date().toISOString();
+ bmSave();bmSyncAll(true,id);
+ if(state.bm)update(true);else{refreshBar();renderPanel()}}
+function bmBtn(id,cls){
+ var b=el("button","bm"+(cls?" "+cls:""));b.type="button";b.dataset.id=id;
+ b.appendChild(svgIcon("M6 3h12a1 1 0 0 1 1 1v17l-7-4.5L5 21V4a1 1 0 0 1 1-1z"));bmSet(b);
+ b.addEventListener("click",function(e){e.stopPropagation();bmToggle(id)});return b}
+// div role=button: click + Enter/Space
+function press(node,fn){
+ node.setAttribute("role","button");node.tabIndex=0;node.addEventListener("click",fn);
+ node.addEventListener("keydown",function(e){if(e.target===node&&(e.key==="Enter"||e.key===" ")){e.preventDefault();fn()}})}
+function bmExport(){
+ try{var d=new Date(),pad=function(n){return(n<10?"0":"")+n};
+  var blob=new Blob([JSON.stringify({v:1,ids:BM},null,1)],{type:"application/json"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="showcase-bookmarks-"+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+".json";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+  bmMsg="내보냈어요"}catch(e){bmMsg="내보내지 못했어요"}
+ renderPanel()}
+// returns number of ids merged, or -1 if the format is wrong
+function bmMerge(o){
+ if(!o||o.v!==1||!o.ids||typeof o.ids!=="object"||Array.isArray(o.ids))return -1;
+ var n=0;Object.keys(o.ids).forEach(function(k){var v=o.ids[k];if(typeof v!=="string")return;
+  if(!BM[k]||v<BM[k])BM[k]=v;n++});
+ bmSave();return n}
+function toggleIn(arr,v){var i=arr.indexOf(v);if(i<0)arr.push(v);else arr.splice(i,1)}
+
+function qMatch(c){
+ if(!state.q)return true;
+ var terms=state.q.toLowerCase().split(/\s+/).filter(Boolean);
+ for(var i=0;i<terms.length;i++)if(c._s.indexOf(terms[i])<0)return false;
+ return true}
+function matches(c,skip){
+ if(!qMatch(c))return false;
+ if(state.onlyNew&&!c.is_new)return false;
+ for(var g=0;g<GROUPS.length;g++){
+  var G=GROUPS[g],sel=state[G.key];
+  if(G.key===skip)continue;
+  if(G.key==="theme"){
+   // broad OR sub
+   if(sel.length||state.sub.length){
+    if(!sel.some(function(s){return c.theme.indexOf(s)>=0})&&!state.sub.some(function(s){return c.sub.indexOf(s)>=0}))return false}
+   continue}
+  if(!sel.length)continue;
+  var vals=values(c,G.field);
+  if(!sel.some(function(s){return vals.indexOf(s)>=0}))return false}
+ if(state.bm&&!bmHas(c.id))return false;
+ return true}
+
+var fbEl=$("fbtns"),panel=$("fpanel"),openKey=null,FB={},nb=null,SORT="added";
+GROUPS.concat([BMG]).forEach(function(G){
+ var b=el("button","fb");b.type="button";b.setAttribute("aria-haspopup","true");b.setAttribute("aria-expanded","false");b.setAttribute("aria-controls","fpanel");
+ var bub=el("span","bub"+(G.key==="bm"?" pk":""));bub.hidden=true;
+ b.appendChild(el("span",null,G.label));b.appendChild(bub);b.appendChild(chev());
+ b.addEventListener("click",function(){setPanel(openKey===G.key?null:G.key)});
+ fbEl.appendChild(b);FB[G.key]={b:b,bub:bub}});
+if(hasNew){
+ nb=el("button","fb","NEW만");nb.type="button";nb.setAttribute("aria-pressed","false");
+ nb.addEventListener("click",function(){state.onlyNew=!state.onlyNew;update()});fbEl.appendChild(nb)}
+
+function countsFor(G,field){
+ // cases matching all OTHER active filters, so options predict the result
+ var counts={};field=field||G.field;
+ CASES.forEach(function(c){if(matches(c,G.key))values(c,field).forEach(function(v){counts[v]=(counts[v]||0)+1})});
+ return counts}
+function refreshBar(){
+ GROUPS.forEach(function(G){var n=state[G.key].length+(G.key==="theme"?state.sub.length:0),f=FB[G.key];
+  f.bub.hidden=!n;f.bub.textContent=n?String(n):"";f.b.classList.toggle("on",n>0);
+  f.b.setAttribute("aria-expanded",openKey===G.key?"true":"false")});
+ var bn=bmCount(),fb=FB.bm;fb.bub.hidden=!bn;fb.bub.textContent=bn?String(bn):"";
+ fb.b.classList.toggle("on",state.bm);fb.b.setAttribute("aria-expanded",openKey==="bm"?"true":"false");
+ if(nb)nb.setAttribute("aria-pressed",state.onlyNew?"true":"false")}
+function panelKeep(){var a=document.activeElement;return panel.contains(a)?(a.id||a.value):null}
+function renderBmPanel(){
+ var keep=panelKeep(),focusEl=null;
+ panel.textContent="";panel.setAttribute("aria-label","북마크");
+ var lb=el("label","opt"),cb=document.createElement("input");cb.type="checkbox";cb.value="bm-only";cb.checked=state.bm;
+ cb.addEventListener("change",function(){state.bm=cb.checked;update()});
+ lb.appendChild(cb);lb.appendChild(el("span",null,"북마크만 보기 ("+bmCount()+")"));panel.appendChild(lb);
+ var act=el("div","pact"),ex=el("button","plink","북마크 내보내기"),im=el("button","plink","북마크 불러오기");
+ ex.type="button";ex.id="bmexp";im.type="button";im.id="bmimp";
+ ex.addEventListener("click",bmExport);im.addEventListener("click",function(){$("bmfile").click()});
+ act.appendChild(ex);act.appendChild(im);panel.appendChild(act);
+ if(bmMsg){var m=el("p","pmsg",bmMsg);m.setAttribute("role","status");panel.appendChild(m)}
+ [cb,ex,im].forEach(function(n){if(keep&&(n.id||n.value)===keep)focusEl=n});
+ if(focusEl)focusEl.focus()}
+function optRow(value,label,count,checked,cls,onchange,indet){
+ var lb=el("label","opt"+(cls?" "+cls:"")),cb=document.createElement("input");cb.type="checkbox";cb.value=value;
+ cb.checked=checked;cb.indeterminate=!!indet;cb.addEventListener("change",onchange);
+ lb.appendChild(cb);lb.appendChild(el("span",null,label));lb.appendChild(el("small",null,String(count||0)));
+ panel.appendChild(lb);return cb}
+function renderThemePanel(G){
+ var counts=countsFor(G),sc=countsFor(G,"sub"),keep=panelKeep(),focusEl=null;
+ panel.textContent="";panel.setAttribute("aria-label",G.label);var any=false;
+ G.opts.forEach(function(o){
+  var all=SUBS[o.v]||[],bSel=state.theme.indexOf(o.v)>=0;
+  var subs=all.filter(function(x){return sc[x]>0||state.sub.indexOf(x)>=0});
+  var some=all.some(function(x){return state.sub.indexOf(x)>=0});
+  if(!(counts[o.v]>0||bSel||some))return;
+  any=true;
+  var cb=optRow("b:"+o.v,o.l,counts[o.v],bSel,"",function(){
+   if(bSel)toggleIn(state.theme,o.v);else state.theme.push(o.v);
+   state.sub=state.sub.filter(function(x){return all.indexOf(x)<0});update()},!bSel&&some);
+  if(keep===cb.value)focusEl=cb;
+  subs.forEach(function(x){
+   var sb=optRow("s:"+x,x,sc[x],bSel||state.sub.indexOf(x)>=0,"sub",function(){
+    if(bSel){toggleIn(state.theme,o.v);state.sub=state.sub.filter(function(y){return all.indexOf(y)<0}).concat(all.filter(function(y){return y!==x}))}
+    else toggleIn(state.sub,x);
+    update()});
+   if(keep===sb.value)focusEl=sb})});
+ if(!any)panel.appendChild(el("p","pe","선택할 항목이 없습니다."));
+ if(focusEl)focusEl.focus()}
+function renderPanel(){
+ if(!openKey)return;
+ if(openKey==="bm"){renderBmPanel();return}
+ var G=GROUPS.filter(function(g){return g.key===openKey})[0];
+ if(G.key==="theme"){renderThemePanel(G);return}
+ var counts=countsFor(G);
+ var keep=panelKeep(),focusEl=null;
+ panel.textContent="";panel.setAttribute("aria-label",G.label);
+ var opts=G.opts.filter(function(o){return counts[o.v]>0||state[G.key].indexOf(o.v)>=0});
+ opts.forEach(function(o){
+  var lb=el("label","opt"),cb=document.createElement("input");cb.type="checkbox";cb.value=o.v;
+  cb.checked=state[G.key].indexOf(o.v)>=0;
+  cb.addEventListener("change",function(){toggleIn(state[G.key],o.v);update()});
+  lb.appendChild(cb);lb.appendChild(el("span",null,o.l));lb.appendChild(el("small",null,String(counts[o.v]||0)));
+  panel.appendChild(lb);if(keep===o.v)focusEl=cb});
+ if(!opts.length)panel.appendChild(el("p","pe","선택할 항목이 없습니다."));
+ if(focusEl)focusEl.focus()}
+function placePanel(){
+ if(!openKey||panel.hidden)return;
+ var f=$("filters").getBoundingClientRect();
+ if(window.matchMedia("(max-width:640px)").matches){
+  // bring the bar up to its sticky spot when there's little room below it
+  if(window.innerHeight-f.bottom<320){var hh=$("top").getBoundingClientRect().height;window.scrollBy({top:f.top-hh,behavior:"instant"});f=$("filters").getBoundingClientRect()}
+  panel.style.left="";panel.style.top=(f.bottom+6)+"px";panel.style.maxHeight=Math.max(200,window.innerHeight-f.bottom-18)+"px";return}
+ panel.style.top="";panel.style.maxHeight="";
+ var r=FB[openKey].b.getBoundingClientRect(),w=panel.offsetWidth;
+ var l=Math.min(r.left,window.innerWidth-w-12);
+ panel.style.left=Math.max(12-f.left,l-f.left)+"px"}
+function setPanel(key){
+ if(key!==openKey)bmMsg="";
+ openKey=key;panel.hidden=!key;refreshBar();
+ if(key){var hp=$("histpop");if(!hp.hidden){hp.hidden=true;$("hist").setAttribute("aria-expanded","false")}
+  renderPanel();placePanel()}}
+$("hist").addEventListener("click",function(){if(openKey)setPanel(null)});
+document.addEventListener("click",function(e){
+ if(openKey&&e.target.isConnected&&!panel.contains(e.target)&&!(e.target.closest&&e.target.closest(".fb")))setPanel(null)});
+document.addEventListener("keydown",function(e){
+ if(e.key==="Escape"&&openKey&&$("ov").hidden){var b=FB[openKey].b;setPanel(null);b.focus()}});
+window.addEventListener("resize",placePanel);
+
+/* header height -> sticky offset of the filter bar */
+function measureHeader(){document.documentElement.style.setProperty("--hh",$("top").offsetHeight+"px")}
+measureHeader();window.addEventListener("resize",measureHeader);
+if(window.ResizeObserver)new ResizeObserver(measureHeader).observe($("top"));
+
+function renderChips(){
+ var list=$("chiplist");list.textContent="";
+ function add(label,fn){var b=el("button","sc",label+" ✕");b.type="button";b.setAttribute("aria-label",label+" 조건 제거");b.addEventListener("click",fn);list.appendChild(b)}
+ if(state.q)add("검색: "+state.q,function(){state.q="";$("q").value="";update()});
+ GROUPS.forEach(function(G){state[G.key].slice().forEach(function(v){
+  var o=G.opts.filter(function(x){return x.v===v})[0];
+  add(o?o.l:v,function(){toggleIn(state[G.key],v);update()})});
+  if(G.key==="theme")state.sub.slice().forEach(function(v){add(v,function(){toggleIn(state.sub,v);update()})})});
+ if(state.bm)add("북마크만",function(){state.bm=false;update()});
+ if(state.onlyNew)add("NEW만",function(){state.onlyNew=false;update()});
+ $("chips").hidden=!active()}
+
+
+/* ---------- theme folders ---------- */
+var FPAL=["#CFFF68","#F8AEDF","#2745A0","#F0F0F2","#8FA3E0","#CFFF68"];
+var themeList=META.themes.map(function(t){return{name:t,cases:CASES.filter(function(c){return c.theme.indexOf(t)>=0})}}).filter(function(g){return g.cases.length});
+var openFolder=null;
+function folderText(hex){
+ var r=parseInt(hex.substr(1,2),16),g=parseInt(hex.substr(3,2),16),b=parseInt(hex.substr(5,2),16);
+ return (0.299*r+0.587*g+0.114*b)>150?"#1E1E1E":"#FFFFFF"}
+var FOLDERS=[];
+function hasSub(x){return function(c){return c.sub.indexOf(x)>=0}}
+function fillFolder(f,still,keepLim){
+ var g=f.g,fin=f.fin;fin.textContent="";fin.classList.toggle("still",!!still);
+ if(!keepLim||!f.lim)f.lim=PER;
+ var shown=f.sub?f.list.filter(hasSub(f.sub)):f.list;
+ var head=el("div","fhead"),nm=el("div","fname");nm.appendChild(el("h3",null,g.name));nm.appendChild(el("span",null,shown.length+"개 사례"));
+ head.appendChild(nm);
+ var go=el("button","fgo","목록 보기에서 필터 →");go.type="button";
+ go.addEventListener("click",function(){if(f.sub){state.theme=[];state.sub=[f.sub]}else{state.theme=[g.name];state.sub=[]}update();setView("grid",true)});
+ head.appendChild(go);fin.appendChild(head);
+ if(!f.list.length){fin.appendChild(el("p","fempty","검색 결과가 없어요"));f.filled=true;return}
+ var subs=(SUBS[g.name]||[]).map(function(x){return{k:x,n:f.list.filter(hasSub(x)).length}}).filter(function(x){return x.n>0});
+ if(subs.length){
+  var row=el("div","fsubs");row.setAttribute("role","group");row.setAttribute("aria-label","세부 테마");
+  [{k:null,n:f.list.length,l:"전체"}].concat(subs.map(function(x){return{k:x.k,n:x.n,l:x.k}})).forEach(function(x){
+   var b=el("button","fsub");b.type="button";b.setAttribute("aria-pressed",f.sub===x.k?"true":"false");
+   b.appendChild(el("span",null,x.l));b.appendChild(el("small",null,String(x.n)));
+   b.addEventListener("click",function(){
+    f.sub=(x.k===null||f.sub===x.k)?null:x.k;fillFolder(f,true);
+    Array.prototype.forEach.call(f.fin.querySelectorAll(".fsub"),function(n){if(n.firstChild.textContent===(f.sub===null?"전체":f.sub))n.focus()})});
+   row.appendChild(b)});
+  fin.appendChild(row)}
+ var grid=el("div","fgrid"),all=sorted(shown),from=keepLim?f.lim-PER:0;
+ if(from<0)from=0;
+ all.slice(0,f.lim).forEach(function(c,n){var isNew=keepLim&&n>=from;n=Math.max(0,n-from);
+  var im=IMG[c.id],r=el("div","fc"+(isNew?" nw":"")),b=el("div","cm");r.style.setProperty("--d",Math.min(n*.03,.3).toFixed(2)+"s");
+  var ph=el("span","fi");
+  if(im.t){var i=document.createElement("img");i.src=im.t;i.alt="";i.loading="lazy";i.decoding="async";ph.appendChild(i)}
+  ph.appendChild(capEl(c,false));b.appendChild(ph);b.setAttribute("aria-label",c.ko);if(c.orig&&c.orig!==c.ko)b.appendChild(el("span","ft2",c.orig));
+  var sn=(META.site_names||{})[c.site]||c.site;b.appendChild(el("span","fy",c.year!=null?sn+" · "+c.year:sn));
+  press(b,function(){openDetail(c.id)});r.appendChild(b);r.appendChild(bmBtn(c.id));grid.appendChild(r)});
+ fin.appendChild(grid);
+ var left=all.length-Math.min(f.lim,all.length);
+ if(left>0){var mw=el("div","fmore"),mb=el("button",null,"더 보기");mb.type="button";
+  mb.appendChild(el("small",null,"남은 "+left+"개"));
+  mb.addEventListener("click",function(){var y=window.scrollY;f.lim+=PER;fillFolder(f,true,true);window.scrollTo(0,y);
+   var cs=f.fin.querySelectorAll(".fc .cm");if(cs[f.lim-PER])cs[f.lim-PER].focus({preventScroll:true})});
+  mw.appendChild(mb);fin.appendChild(mw)}
+ f.filled=true}
+function setFolder(f,on){
+ if(!on){f.sub=null;f.filled=false}
+ f.root.classList.toggle("open",on);f.tab.setAttribute("aria-expanded",on?"true":"false");
+ if(on&&(!f.filled||f.fin.classList.contains("still")))fillFolder(f,false)}
+function buildThemes(){
+ var cab=$("cab");
+ themeList.forEach(function(g,i){
+  var col=FPAL[i%FPAL.length],dark=folderText(col)==="#1E1E1E";
+  var root=el("div","fd"+(col==="#FFFFFF"?" fw":""));root.style.setProperty("--fc",col);root.style.setProperty("--ft",dark?"#1E1E1E":"#FFFFFF");
+  root.style.setProperty("--fp",dark?"rgba(30,30,30,.14)":"rgba(255,255,255,.24)");
+  root.style.setProperty("--i3",String(i%3));root.style.setProperty("--i2",String(i%2));
+  root.style.zIndex=String(i+1);
+  var tab=el("button","ftab");tab.type="button";tab.id="ftab"+i;
+  tab.setAttribute("aria-expanded","false");tab.setAttribute("aria-controls","fbody"+i);
+  var fn=el("span","fn",String(g.cases.length));
+  tab.appendChild(el("span","fl",g.name));tab.appendChild(fn);
+  var band=el("div","fband"),body=el("div","fbody");body.id="fbody"+i;
+  body.setAttribute("role","region");body.setAttribute("aria-labelledby","ftab"+i);
+  var fin=el("div","fin");body.appendChild(fin);band.appendChild(body);
+  root.appendChild(tab);root.appendChild(band);cab.appendChild(root);
+  var f={g:g,root:root,tab:tab,fin:fin,fn:fn,list:g.cases,filled:false,sub:null};FOLDERS.push(f);
+  tab.addEventListener("click",function(){
+   if(openFolder===f){setFolder(f,false);openFolder=null;return}
+   if(openFolder)setFolder(openFolder,false);
+   setFolder(f,true);openFolder=f})})}
+// re-filter folders by the search query only (facets are ignored here)
+function renderFolders(){
+ var seen={};
+ FOLDERS.forEach(function(f){
+  f.list=f.g.cases.filter(qMatch);
+  if(f.sub&&!f.list.some(hasSub(f.sub)))f.sub=null;
+  f.fn.textContent=String(f.list.length);
+  f.root.classList.toggle("dim",!f.list.length);
+  f.list.forEach(function(c){seen[c.id]=1});
+  if(f===openFolder)fillFolder(f,true);else f.filled=false});
+ var n=Object.keys(seen).length;
+ $("fvintro").textContent=state.q?"검색 결과 "+n+"개 사례 — 탭을 눌러 폴더를 펼쳐 보세요":
+  "테마별로 정리된 "+CASES.length+"개의 사례 — 탭을 눌러 폴더를 펼쳐 보세요";
+ var fq=$("fvq");fq.textContent="";fq.hidden=!state.q;
+ if(state.q){var b=el("button","sc","검색: "+state.q+" ✕");b.type="button";b.setAttribute("aria-label","검색어 지우기");
+  b.addEventListener("click",function(){state.q="";$("q").value="";update()});fq.appendChild(b)}}
+/* view mode: grid | folders */
+function setView(v,anim){
+ v=v==="folders"?"folders":"grid";
+ document.body.setAttribute("data-view",v);
+ $("viewbtn").setAttribute("aria-pressed",v==="folders"?"true":"false");
+ try{localStorage.setItem("showcase-view",v)}catch(e){}
+ if(!anim)return;
+ setPanel(null);var hp=$("histpop");if(!hp.hidden){hp.hidden=true;$("hist").setAttribute("aria-expanded","false")}
+ window.scrollTo({top:0,behavior:"instant"});
+ var t=$(v==="folders"?"folderview":"gridview");t.classList.remove("vin");void t.offsetWidth;t.classList.add("vin");
+}
+$("viewbtn").addEventListener("click",function(){setView(document.body.getAttribute("data-view")==="folders"?"grid":"folders",true)});
+buildThemes();
+setView(document.body.getAttribute("data-view"),false);
+
+/* ---------- grid ---------- */
+function themeNo(t){var i=META.themes.indexOf(t);return i<0?t:(i<9?"0":"")+(i+1)+" "+t}
+function capEl(c,kick){var cp=el("span","cap");if(kick&&c.theme&&c.theme.length)cp.appendChild(el("span","ck",themeNo(c.theme[0])));cp.appendChild(el("span","cp",c.ko));return cp}
+function card(c){
+ var im=IMG[c.id],root=el("article","card"),b=el("div","cm");root.dataset.id=c.id;
+ var ph=el("span","ph");
+ if(im.t){var i=document.createElement("img");i.src=im.t;i.alt=c.ko;i.width=im.w;i.height=im.h;
+  i.loading="lazy";i.decoding="async";ph.appendChild(i)}
+ if(c.is_new)ph.appendChild(el("span","badge","NEW"));
+ ph.appendChild(capEl(c,true));
+ b.appendChild(ph);
+ var sub=c.orig&&c.orig!==c.ko?c.orig:"";
+ var tr=el("span","tr");var tt=el("span","t"+(sub?" sub":""),sub||c.ko);tt.title=sub||c.ko;tr.appendChild(tt);
+ var stc=(META.site_names||{})[c.site]||"";var yy=[stc,c.year!=null?String(c.year):""].filter(Boolean).join(" · ");
+ if(yy)tr.appendChild(el("span","y",yy));
+ b.appendChild(tr);
+ var tags=c.sub.slice(0,2).concat(c.exp).slice(0,3);
+ if(tags.length){var t=el("span","tags");tags.forEach(function(x){t.appendChild(el("span","tag",x))});b.appendChild(t)}
+ press(b,function(){openDetail(c.id)});
+ root.appendChild(b);root.appendChild(bmBtn(c.id));
+ return root}
+
+function sorted(list){
+ var l=list.slice();
+ if(SORT==="added")l.sort(function(a,b){return a.added<b.added?1:a.added>b.added?-1:0});
+ else if(SORT==="year")l.sort(function(a,b){
+  if(a.year==null)return b.year==null?0:1;if(b.year==null)return -1;return b.year-a.year});
+ else l.sort(function(a,b){return a.ko.localeCompare(b.ko,"ko")});
+ return l}
+// only the current page's cards are built, so other pages' images are never decoded
+function renderGrid(){
+ var list=sorted(CASES.filter(function(c){return matches(c)}));
+ var n=list.length,pages=Math.max(1,Math.ceil(n/PER));
+ if(PAGE>pages)PAGE=pages;if(PAGE<1)PAGE=1;
+ var a=(PAGE-1)*PER,b=Math.min(n,a+PER);
+ var g=$("grid");g.textContent="";
+ var frag=document.createDocumentFragment();list.slice(a,b).forEach(function(c){frag.appendChild(card(c))});
+ g.appendChild(frag);
+ $("empty").hidden=n>0;
+ $("cnt").textContent=pages>1?n+"개 중 "+(a+1)+"–"+b:n+"개 사례";
+ renderPager(pages)}
+function pageList(p,t){
+ if(t<=7){var r=[];for(var i=1;i<=t;i++)r.push(i);return r}
+ var lo=Math.max(2,p-1),hi=Math.min(t-1,p+1);
+ if(p<=3){lo=2;hi=4}else if(p>=t-2){lo=t-3;hi=t-1}
+ var o=[1];if(lo>2)o.push(0);for(var j=lo;j<=hi;j++)o.push(j);if(hi<t-1)o.push(0);o.push(t);return o}
+function renderPager(pages){
+ var nav=$("pager");nav.textContent="";nav.hidden=pages<2;if(pages<2)return;
+ function btn(label,to,cls,aria,dis){var b=el("button","pg"+(cls?" "+cls:""),label);b.type="button";
+  if(aria)b.setAttribute("aria-label",aria);if(dis)b.disabled=true;
+  else if(to===PAGE&&!cls)b.setAttribute("aria-current","page");
+  else b.addEventListener("click",function(){goPage(to)});nav.appendChild(b)}
+ btn("‹",PAGE-1,"ar","이전 페이지",PAGE<=1);
+ pageList(PAGE,pages).forEach(function(x){if(!x){nav.appendChild(el("span","pgdot","…"));return}btn(String(x),x,null,x+"페이지")});
+ btn("›",PAGE+1,"ar","다음 페이지",PAGE>=pages)}
+function goPage(p){
+ PAGE=p;renderGrid();
+ var off=$("top").offsetHeight+$("filters").offsetHeight+($("chips").hidden?0:$("chips").offsetHeight)+8;
+ var y=$("grid").getBoundingClientRect().top+window.scrollY-off;
+ y=Math.max(0,y);window.scrollTo({top:y,behavior:Math.abs(y-window.scrollY)>window.innerHeight*1.5?"instant":"smooth"});
+ var cur=$("pager").querySelector("[aria-current]");if(cur)cur.focus({preventScroll:true})}
+function active(){return state.q||state.onlyNew||state.bm||state.theme.length||state.sub.length||state.exp.length||state.aud.length}
+function update(keepPage){
+ if(!keepPage)PAGE=1;
+ refreshBar();renderPanel();renderChips();renderGrid();
+ renderFolders();
+ placePanel()}
+
+/* search: IME-safe -- skip while composing, apply on compositionend */
+var composing=false;
+function onSearch(){state.q=$("q").value.trim();update()}
+$("q").addEventListener("compositionstart",function(){composing=true});
+$("q").addEventListener("compositionend",function(){composing=false;onSearch()});
+$("q").addEventListener("input",function(e){if(!composing&&!e.isComposing)onSearch()});
+$("clr").addEventListener("click",function(){
+ state=freshState();$("q").value="";update()});
+$("bmfile").addEventListener("change",function(){
+ var inp=this,f=inp.files&&inp.files[0];if(!f)return;
+ var rd=new FileReader();
+ rd.onload=function(){var n=-1;try{n=bmMerge(JSON.parse(String(rd.result)))}catch(e){n=-1}
+  bmMsg=n<0?"파일 형식이 맞지 않아요":n+"개 불러왔어요";inp.value="";
+  if(n>=0)bmSyncAll(false);update()};
+ rd.onerror=function(){bmMsg="파일 형식이 맞지 않아요";inp.value="";renderPanel()};
+ rd.readAsText(f)});
+$("sort").addEventListener("change",function(){SORT=$("sort").value;PAGE=1;renderGrid();renderFolders()});
+$("per").value=String(PER);
+$("per").addEventListener("change",function(){var v=parseInt($("per").value,10);if(v!==20&&v!==40&&v!==80)return;
+ PER=v;PAGE=1;try{localStorage.setItem(PER_KEY,String(v))}catch(e){}
+ renderGrid();FOLDERS.forEach(function(f){f.lim=0});if(openFolder)fillFolder(openFolder,true)});
+
+/* ---------- detail overlay ---------- */
+var cur=null,idx=0,lastFocus=null;
+function row(dl,k,v){if(v===""||v==null)return;dl.appendChild(el("dt",null,k));dl.appendChild(el("dd",null,String(v)))}
+function section(info,title,node){info.appendChild(el("h3",null,title));info.appendChild(node)}
+
+function showSlide(){
+ var imgs=IMG[cur.id].d,car=$("car");car.textContent="";
+ if(!imgs.length){car.style.display="none";return}
+ car.style.display="";
+ var i=document.createElement("img");i.src=imgs[idx];i.alt=cur.ko+" "+(idx+1);i.draggable=false;car.appendChild(i);
+ if(imgs.length>1){
+  var p=el("button","nav p","‹");p.type="button";p.setAttribute("aria-label","이전 사진");p.onclick=function(){step(-1)};
+  var n=el("button","nav n","›");n.type="button";n.setAttribute("aria-label","다음 사진");n.onclick=function(){step(1)};
+  car.appendChild(p);car.appendChild(n);
+  car.appendChild(el("span","cnt",(idx+1)+" / "+imgs.length));
+  var dots=el("div","dots");
+  imgs.forEach(function(_,j){var d=el("button","dot");d.type="button";d.setAttribute("aria-label",(j+1)+"번째 사진");
+   if(j===idx)d.setAttribute("aria-current","true");d.onclick=function(){idx=j;showSlide()};dots.appendChild(d)});
+  car.appendChild(dots)}
+}
+function step(d){var n=IMG[cur.id].d.length;if(n<2)return;idx=(idx+d+n)%n;showSlide()}
+
+function openDetail(id){
+ cur=CASES.filter(function(c){return c.id===id})[0];idx=0;lastFocus=document.activeElement;
+ var c=cur,info=$("info");info.textContent="";
+ var stn=(META.site_names||{})[c.site]||c.site;if(stn)info.appendChild(el("span","studio",stn));
+ var ttl=el("div","ttl");ttl.appendChild(el("h2",null,c.ko));ttl.appendChild(bmBtn(c.id,"dt"));info.appendChild(ttl);
+ if(c.orig&&c.orig!==c.ko)info.appendChild(el("div","orig",c.orig));
+ var dl=el("dl");row(dl,"의뢰처",c.client);row(dl,"연도",c.year);row(dl,"장소",c.location);row(dl,"구현·제안",c.status);
+ if(dl.children.length)info.appendChild(dl);
+ if(c.summary)section(info,"요약",el("p",null,c.summary));
+ if(c.point)section(info,"KEY POINT",el("p","quote",c.point));
+ var tags=c.theme.concat(c.sub,c.exp,c.aud);
+ if(tags.length){var t=el("div","tags");tags.forEach(function(x){t.appendChild(el("span","tag",x))});section(info,"태그",t)}
+ if(/^https?:\/\//.test(c.url)){var a=el("a","src","원문 보기 ↗");a.href=c.url;a.target="_blank";a.rel="noopener";info.appendChild(a)}
+ info.scrollTop=0;
+ showSlide();
+ $("ov").hidden=false;document.body.classList.add("locked");$("x").focus();
+}
+function closeDetail(){
+ $("ov").hidden=true;document.body.classList.remove("locked");cur=null;
+ if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+$("x").addEventListener("click",closeDetail);
+$("scrim").addEventListener("click",closeDetail);
+document.addEventListener("keydown",function(e){
+ if($("ov").hidden)return;
+ if(e.key==="Escape")closeDetail();
+ else if(e.key==="ArrowLeft")step(-1);
+ else if(e.key==="ArrowRight")step(1)});
+// touch swipe on the carousel
+var sx=null;
+$("car").addEventListener("touchstart",function(e){sx=e.touches[0].clientX},{passive:true});
+$("car").addEventListener("touchend",function(e){
+ if(sx==null)return;var dx=e.changedTouches[0].clientX-sx;sx=null;
+ if(Math.abs(dx)>40)step(dx<0?1:-1)},{passive:true});
+
+update();
+})();
+</script>
+</body>
+</html>
