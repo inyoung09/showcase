@@ -903,6 +903,40 @@ $("car").addEventListener("touchend",function(e){
 
 
 
+/* ---------- inspire (영감) ---------- */
+(function(){
+ var node=document.getElementById("inspire");
+ if(!node)return;
+ var I;try{I=JSON.parse(node.textContent)}catch(e){return}
+ if(!I||!I.items||!I.items.length)return;
+ var row=$("insprow");
+ I.items.forEach(function(it){
+  var a=el("a","icard");a.href=it.source_url||it.pin_url||"#";a.target="_blank";a.rel="noopener";
+  a.setAttribute("role","listitem");
+  a.setAttribute("aria-label",(it.title_ko||"영감")+" 원문 보기");
+  var pv=el("span","ip");
+  if(it.image){var im=document.createElement("img");im.src=it.image;im.alt=it.title_ko||"";im.loading="lazy";im.decoding="async";pv.appendChild(im)}
+  a.appendChild(pv);
+  var pills=el("span","ipills");
+  if(it.form)pills.appendChild(el("span","ipill",it.form));
+  (it.themes||[]).slice(0,1).forEach(function(t){pills.appendChild(el("span","ipill th",t))});
+  a.appendChild(pills);
+  a.appendChild(el("span","it",it.title_ko||""));
+  row.appendChild(a);
+ });
+ $("inspcnt").textContent=I.items.length+"개";
+ if(I.board)$("inspboard").textContent="보드 · "+I.board;
+ $("inspsec").hidden=false;
+ var L=$("inspl"),R=$("inspr");
+ function sync(){var max=row.scrollWidth-row.clientWidth-4;L.hidden=false;R.hidden=false;L.disabled=row.scrollLeft<=2;R.disabled=row.scrollLeft>=max}
+ function go(dir){row.scrollBy({left:dir*(row.clientWidth*0.8),behavior:"smooth"})}
+ L.addEventListener("click",function(){go(-1)});
+ R.addEventListener("click",function(){go(1)});
+ row.addEventListener("scroll",sync,{passive:true});
+ window.addEventListener("resize",sync);
+ sync();
+})();
+
 update();
 })();
 </script>
