@@ -47,6 +47,17 @@ header.top{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px so
 @media (max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:700px){.grid{grid-template-columns:repeat(2,1fr);gap:16px 12px}.top-in,.hero-in,.wrap{padding-left:16px;padding-right:16px}.hero{padding-top:28px}}
 @media (max-width:420px){.grid{grid-template-columns:1fr}}
+
+.sitefoot{margin:0;padding:64px 28px;background:#fff;border-top:1px solid var(--line);color:var(--mute);text-align:center}
+.sitefoot-in{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px}
+.sitefoot .flogo{display:inline-flex;align-items:center;justify-content:center;color:var(--ink);text-decoration:none;opacity:.55;line-height:0}
+.sitefoot .flogo svg.logo{display:block;height:18px;width:auto;max-width:160px}
+.sitefoot .flogo .logo-t{font-family:"Arial Black","Pretendard",sans-serif;font-size:16px;font-weight:900;letter-spacing:-.01em}
+.sitefoot .fline{margin:0;font-size:13px;font-weight:500;letter-spacing:-.01em}
+.sitefoot .fdate{margin:0;font-size:12px;opacity:.85}
+.sitefoot .ftop{appearance:none;-webkit-appearance:none;margin-top:6px;display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:0;border-radius:999px;background:transparent;color:var(--mute);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.sitefoot .ftop:hover{color:var(--ink);background:var(--soft)}
+@media (max-width:640px){.sitefoot{padding:56px 16px}}
 </style>
 </head>
 <body>
