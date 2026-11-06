@@ -275,11 +275,10 @@ body[data-view="folders"] .fvrule{background:rgba(255,255,255,.14)}
 
 
 /* ---- inspire (영감) band ---- */
-.insp{margin:48px 0 0;padding:40px 0 48px;background:var(--inspire);color:#fff}
+.insp{margin:24px 0 0;padding:40px 0 48px;background:var(--inspire);color:#fff}
 .insp-in{max-width:1400px;margin:0 auto;padding:0 28px;position:relative}
 .insp .ih{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 22px}
 .insp .ih h2{margin:0;font-size:clamp(22px,3vw,32px);font-weight:800;letter-spacing:-.02em;color:#fff}
-.insp .ih .icnt{font-size:13px;font-weight:600;opacity:.75}
 .insp .ih .iboard{margin-left:auto;font-size:12px;font-weight:600;opacity:.7}
 .insp-row{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .icat{display:flex;flex-direction:column;color:inherit;text-decoration:none;min-width:0;border-radius:14px;transition:transform .2s}
@@ -290,14 +289,13 @@ body[data-view="folders"] .fvrule{background:rgba(255,255,255,.14)}
 .icat .ip img:only-child{grid-column:1/3;grid-row:1/3}
 .icat .iblurb{display:block;margin-top:12px;font-size:12px;font-weight:600;letter-spacing:.01em;opacity:.78;line-height:1.35}
 .icat .iname{display:block;margin-top:4px;font-size:clamp(16px,1.6vw,20px);font-weight:800;letter-spacing:-.02em;line-height:1.25}
-.icat .inum{display:inline-block;margin-top:8px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.2);font-size:12px;font-weight:700}
 @media (max-width:900px){.insp-row{grid-template-columns:repeat(2,1fr);gap:14px}}
-@media (max-width:640px){.insp{padding:28px 0 32px;margin-top:36px}.insp-in{padding:0 16px}.insp-row{grid-template-columns:1fr;gap:14px}}
+@media (max-width:640px){.insp{padding:28px 0 32px;margin-top:24px}.insp-in{padding:0 16px}.insp-row{grid-template-columns:1fr;gap:14px}}
 
 /* ---- pagination ---- */
 .fright .per{padding-right:26px;font-weight:500;color:var(--mute)}
 .fright .per:hover{color:var(--ink)}
-.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:56px 0 8px}
+.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin:56px 0 0}
 .pg{min-width:38px;height:38px;padding:0 10px;border:0;border-radius:10px;background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,color .15s}
 .pg:hover:not(:disabled):not([aria-current]){background:var(--soft)}
 .pg[aria-current=page]{background:var(--cobalt);color:#fff;font-weight:800;cursor:default}
@@ -368,7 +366,6 @@ body[data-view="folders"] .fvrule{background:rgba(255,255,255,.14)}
  <div class="insp-in">
   <div class="ih">
    <h2 id="insph">영감</h2>
-   <span id="inspcnt" class="icnt"></span>
    <span id="inspboard" class="iboard"></span>
   </div>
   <div id="insprow" class="insp-row" role="list"></div>
@@ -898,9 +895,7 @@ $("car").addEventListener("touchend",function(e){
  var I;try{I=JSON.parse(node.textContent)}catch(e){return}
  if(!I||!I.forms||!I.forms.length)return;
  var row=$("insprow");
- var total=0;
  I.forms.forEach(function(f){
-  total+=f.count||0;
   var a=el("a","icat");
   a.href="inspire.html?f="+encodeURIComponent(f.id);
   a.setAttribute("role","listitem");
@@ -912,10 +907,8 @@ $("car").addEventListener("touchend",function(e){
   a.appendChild(pv);
   a.appendChild(el("span","iblurb",f.blurb||""));
   a.appendChild(el("span","iname",f.name||""));
-  a.appendChild(el("span","inum",(f.count||0)+"개"));
   row.appendChild(a);
  });
- $("inspcnt").textContent=total+"개";
  if(I.board)$("inspboard").textContent="보드 · "+I.board;
  $("inspsec").hidden=false;
 })();

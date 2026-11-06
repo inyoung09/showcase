@@ -92,12 +92,11 @@ function render(){
  var tabs=$("tabs");tabs.textContent="";
  forms.forEach(function(f){
   var a=el("a","tab",f.name);a.href="inspire.html?f="+encodeURIComponent(f.id);
-  a.appendChild(el("span",null,(f.count||0)+""));
   if(f.id===form.id)a.setAttribute("aria-current","page");
   tabs.appendChild(a);
  });
  var list=items.filter(function(it){return it.form_id===form.id});
- $("meta").textContent=list.length+"개 · 보드 "+(I.board||"—");
+ $("meta").textContent=I.board?("보드 · "+I.board):"";
  var g=$("grid");g.textContent="";
  list.forEach(function(it){
   var a=el("a","card");
