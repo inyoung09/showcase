@@ -139,6 +139,36 @@ body:not([data-view=folders]) #folderview,body[data-view=folders] #gridview{disp
 /* filter bar */
 .filters{position:sticky;top:var(--hh);z-index:30;background:#fff;border-bottom:1px solid var(--line);margin-top:14px}
 .filters-in{max-width:1400px;margin:0 auto;padding:10px 28px;display:flex;align-items:center;gap:16px}
+/* year bar (histogram range picker) */
+.ybar-wrap{position:relative;max-width:1400px;margin:0 auto;padding:8px 28px 6px}
+.ybar-head{display:flex;align-items:center;gap:8px;min-height:24px;margin-bottom:2px}
+.ybar-lab{font-size:13px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.ybar-lab span{font-weight:500;color:var(--mute)}
+.ybar-reset{padding:2px 8px;border:0;border-radius:999px;background:var(--soft);color:var(--mute);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.ybar-reset:hover{color:var(--ink);background:#e6e7ea}
+.ybar-unk{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--mute);font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ybar-unk:hover{background:var(--soft);color:var(--ink)}
+.ybar-unk[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ybar-unk small{font-size:11px;font-weight:600;opacity:.7}
+.ybar-scroll{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.ybar-scroll::-webkit-scrollbar{display:none}
+.ybar{position:relative;display:flex;align-items:stretch;height:56px;user-select:none;-webkit-user-select:none;touch-action:none}
+.ycol{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 1px;border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+.ycol:focus{outline:none}
+.ycol:focus-visible .yrect{outline:2px solid var(--cobalt);outline-offset:1px}
+.ychart{display:flex;align-items:flex-end;justify-content:center;width:100%;height:38px;border-bottom:1px solid var(--line)}
+.yrect{display:block;width:100%;max-width:26px;min-height:0;border-radius:3px 3px 0 0;background:var(--cobalt);opacity:.42;pointer-events:none;transition:opacity .15s,height .2s,background .15s}
+.ycol:hover .yrect,.ycol:focus-visible .yrect{opacity:.9}
+.ybar.has-sel .yrect{opacity:.16}
+.ybar.has-sel .ycol.in .yrect{opacity:1}
+.ybar.has-sel .ycol.in .yl{color:var(--ink);font-weight:700}
+.ycol.zero{cursor:pointer}
+.ycol.zero .yrect{min-height:0;background:var(--mute);opacity:.2}
+.ybar.has-sel .ycol.zero .yrect{opacity:.1}
+.ybar.has-sel .ycol.zero.in .yrect{opacity:.35;background:var(--cobalt)}
+.yl{display:block;margin-top:5px;color:var(--mute);font-size:10px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em;white-space:nowrap;pointer-events:none}
+.ytip{position:absolute;z-index:36;bottom:auto;padding:4px 8px;border-radius:6px;background:var(--ink);color:#fff;font-size:11px;font-weight:600;line-height:1.3;white-space:nowrap;pointer-events:none;transform:translate(-50%,-100%);box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.yhint{margin:4px 0 0;color:var(--cobalt);font-size:12px;font-weight:600}
 .fbtns{display:flex;align-items:center;gap:6px;flex:1 1 auto;min-width:0}
 .fb{display:inline-flex;align-items:center;gap:6px;flex:none;padding:8px 12px;border:0;border-radius:8px;background:none;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
 .fb:hover,.fb[aria-expanded=true]{background:var(--soft)}
@@ -244,6 +274,13 @@ main{max-width:1400px;margin:0 auto;padding:22px 28px 0}
  .fd{--o:calc(var(--i2)*48%)}.ftab{min-width:0;height:42px;max-width:min(60%,calc(100% - var(--o)));padding:0 18px}
  .fsubs{padding:14px 16px 0}.fgrid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:14px 16px 22px}.fhead{padding:20px 16px 0}.fname h3{font-size:20px}.fempty{padding:26px 16px 32px}
  .filters-in{padding:8px 16px;flex-wrap:wrap;gap:4px}
+ .ybar-wrap{padding:6px 16px 4px}
+ .ybar-head{flex-wrap:wrap;row-gap:4px}
+ .ycol{min-width:0}
+ .yl{font-size:9px}
+ .ybar-unk{font-size:11px;padding:3px 8px}
+ .ycol:not(.mark):not(.in) .yl{opacity:0}
+ .ycol.in .yl,.ycol.mark .yl{opacity:1}
  .fbtns{flex:1 1 100%;overflow-x:auto;scrollbar-width:none}.fbtns::-webkit-scrollbar{display:none}
  .fright{flex:1 1 100%;justify-content:space-between}
  .fpanel{position:fixed;left:12px;right:12px;max-width:none;min-width:0}
@@ -354,6 +391,18 @@ body[data-view="folders"] .fvrule{background:rgba(255,255,255,.14)}
 </header>
 <div id="gridview">
 <div id="filters" class="filters">
+ <div class="ybar-wrap" id="ybarwrap">
+  <div class="ybar-head">
+   <span class="ybar-lab" id="ybarlab">연도</span>
+   <button type="button" class="ybar-reset" id="ybarreset" hidden>전체</button>
+   <button type="button" class="ybar-unk" id="ybarunk" aria-pressed="false">연도 미확인</button>
+  </div>
+  <div class="ybar-scroll" id="ybarscroll">
+   <div class="ybar" id="ybar" role="listbox" aria-label="연도" aria-multiselectable="true"></div>
+  </div>
+  <div class="ytip" id="ytip" hidden></div>
+  <p class="yhint" id="yhint" hidden>끝나는 연도를 눌러 구간을 정하세요</p>
+ </div>
  <div class="filters-in">
   <div id="fbtns" class="fbtns" role="group" aria-label="필터"></div>
   <div class="fright">
@@ -438,6 +487,15 @@ var hasNew=CASES.some(function(c){return c.is_new});
 var YEAR_OPTS=(function(){var s={},u=false;CASES.forEach(function(c){if(c.year!=null)s[c.year]=1;else u=true});
  var o=Object.keys(s).map(Number).sort(function(a,b){return b-a}).map(function(y){return{v:y+"년",l:y+"년"}});
  if(u)o.push({v:"연도 미확인",l:"연도 미확인"});return o})();
+var YEARS=(function(){
+ var map={},u=0,min=null,max=null;
+ CASES.forEach(function(c){
+  if(c.year==null){u++;return}
+  map[c.year]=(map[c.year]||0)+1;
+  if(min==null||c.year<min)min=c.year;
+  if(max==null||c.year>max)max=c.year});
+ var list=[];if(min!=null)for(var y=min;y<=max;y++)list.push({y:y,n:map[y]||0,v:y+"년"});
+ return {list:list,unknown:u,min:min,max:max}})();
 var GROUPS=[
  {key:"theme",label:"테마",field:"theme",opts:META.themes.map(function(v){return{v:v,l:v}})},
  {key:"exp",label:"체험 방식",field:"exp",opts:META.exps.map(function(v){return{v:v,l:v}})},
@@ -551,6 +609,7 @@ function matches(c,skip){
 
 var fbEl=$("fbtns"),panel=$("fpanel"),openKey=null,FB={},nb=null,SORT="added";
 GROUPS.concat([BMG]).forEach(function(G){
+ if(G.key==="yr")return;
  var b=el("button","fb");b.type="button";b.setAttribute("aria-haspopup","true");b.setAttribute("aria-expanded","false");b.setAttribute("aria-controls","fpanel");
  var bub=el("span","bub"+(G.key==="bm"?" pk":""));bub.hidden=true;
  b.appendChild(el("span",null,G.label));b.appendChild(bub);b.appendChild(chev());
@@ -566,7 +625,8 @@ function countsFor(G,field){
  CASES.forEach(function(c){if(matches(c,G.key))values(c,field).forEach(function(v){counts[v]=(counts[v]||0)+1})});
  return counts}
 function refreshBar(){
- GROUPS.forEach(function(G){var n=state[G.key].length+(G.key==="theme"?state.sub.length:0),f=FB[G.key];
+ GROUPS.forEach(function(G){var f=FB[G.key];if(!f)return;
+  var n=state[G.key].length+(G.key==="theme"?state.sub.length:0);
   f.bub.hidden=!n;f.bub.textContent=n?String(n):"";f.b.classList.toggle("on",n>0);
   f.b.setAttribute("aria-expanded",openKey===G.key?"true":"false")});
  var bn=bmCount(),fb=FB.bm;fb.bub.hidden=!bn;fb.bub.textContent=bn?String(bn):"";
@@ -662,13 +722,15 @@ function renderChips(){
  var list=$("chiplist");list.textContent="";
  function add(label,fn){var b=el("button","sc",label+" ✕");b.type="button";b.setAttribute("aria-label",label+" 조건 제거");b.addEventListener("click",fn);list.appendChild(b)}
  if(state.q)add("검색: "+state.q,function(){state.q="";$("q").value="";update()});
- GROUPS.forEach(function(G){state[G.key].slice().forEach(function(v){
+ GROUPS.forEach(function(G){
+  if(G.key==="yr")return;
+  state[G.key].slice().forEach(function(v){
   var o=G.opts.filter(function(x){return x.v===v})[0];
   add(o?o.l:v,function(){toggleIn(state[G.key],v);update()})});
   if(G.key==="theme")state.sub.slice().forEach(function(v){add(v,function(){toggleIn(state.sub,v);update()})})});
  if(state.bm)add("북마크만",function(){state.bm=false;update()});
  if(state.onlyNew)add("NEW만",function(){state.onlyNew=false;update()});
- $("chips").hidden=!active()}
+ $("chips").hidden=!$("chiplist").children.length}
 
 
 /* ---------- theme folders ---------- */
@@ -840,7 +902,7 @@ function goPage(p){
 function active(){return state.q||state.onlyNew||state.bm||state.theme.length||state.sub.length||state.exp.length||state.aud.length||state.yr.length}
 function update(keepPage){
  if(!keepPage)PAGE=1;
- refreshBar();renderPanel();renderChips();renderGrid();
+ refreshBar();refreshYearBar();renderPanel();renderChips();renderGrid();
  renderFolders();
  placePanel()}
 
@@ -976,6 +1038,204 @@ $("car").addEventListener("touchend",function(e){
  if(I.board)$("inspboard").textContent="보드 · "+I.board;
  $("inspsec").hidden=false;
 })();
+
+/* ---------- year bar ---------- */
+function yrNums(){return state.yr.filter(function(v){return v!=="연도 미확인"}).map(function(v){return parseInt(v,10)}).filter(function(n){return n===n}).sort(function(a,b){return a-b})}
+function yrHasUnk(){return state.yr.indexOf("연도 미확인")>=0}
+function yrBounds(preview){
+ var a,b;
+ if(preview){a=Math.min(preview.start,preview.end);b=Math.max(preview.start,preview.end);return {lo:a,hi:b,on:true}}
+ var ys=yrNums();if(!ys.length)return {lo:null,hi:null,on:false};
+ return {lo:ys[0],hi:ys[ys.length-1],on:true}}
+function setYearRange(a,b,keepUnk){
+ if(a>b){var t=a;a=b;b=t}
+ var next=[];
+ YEARS.list.forEach(function(o){if(o.y>=a&&o.y<=b)next.push(o.v)});
+ if(keepUnk&&yrHasUnk())next.push("연도 미확인");
+ state.yr=next}
+function yearCounts(){
+ var counts={},unk=0;
+ CASES.forEach(function(c){
+  if(!matches(c,"yr"))return;
+  if(c.year==null)unk++;else counts[c.year]=(counts[c.year]||0)+1});
+ return {counts:counts,unk:unk}}
+function yearSelCount(){
+ var n=0,b=yrBounds();
+ CASES.forEach(function(c){
+  if(c.year==null){if(yrHasUnk())n++;return}
+  if(b.on&&c.year>=b.lo&&c.year<=b.hi)n++});
+ return n}
+function yearLabelText(){
+ var b=yrBounds(),unk=yrHasUnk(),n=yearSelCount(),bit;
+ if(b.on)bit=b.lo===b.hi?b.lo+"년":b.lo+"~"+b.hi;
+ else if(unk)bit="연도 미확인";
+ else return "연도";
+ if(b.on&&unk)bit+=" · 연도 미확인";
+ return bit+" · "+n+"건"}
+var yAnchor=null,yDrag=null,yTipTimer=null,yAwaitEnd=false;
+
+function paintYearBar(preview){
+ var bar=$("ybar");if(!bar)return;
+ var b=yrBounds(preview),unk=yrHasUnk();
+ var cc=yearCounts(),max=1;
+ YEARS.list.forEach(function(o){var n=cc.counts[o.y]||0;if(n>max)max=n});
+ var cols=bar.children,H=36;
+ for(var i=0;i<cols.length;i++){
+  var col=cols[i],y=parseInt(col.dataset.y,10),n=cc.counts[y]||0;
+  var inr=b.on&&y>=b.lo&&y<=b.hi;
+  col.classList.toggle("in",inr);
+  col.classList.toggle("zero",n<=0);
+  col.setAttribute("aria-pressed",inr?"true":"false");
+  col.setAttribute("aria-label",y+"년, "+n+"건");
+  var rect=col.querySelector(".yrect");
+  var h=n<=0?0:Math.max(3,Math.round(n/max*H));
+  rect.style.height=h+"px";
+ }
+ bar.classList.toggle("has-sel",b.on);
+ var lab=$("ybarlab"),rst=$("ybarreset"),ub=$("ybarunk"),hint=$("yhint");
+ if(!b.on&&!unk){lab.textContent="연도"}
+ else{lab.textContent="";lab.appendChild(document.createTextNode(yearLabelText()))}
+ rst.hidden=!b.on&&!unk;
+ ub.setAttribute("aria-pressed",unk?"true":"false");
+ ub.textContent="";ub.appendChild(document.createTextNode("연도 미확인"));
+ ub.appendChild(el("small",null,String(cc.unk)));
+ if(hint)hint.hidden=!yAwaitEnd}
+
+function refreshYearBar(){paintYearBar(yDrag)}
+
+function buildYearBar(){
+ var bar=$("ybar");if(!bar||!YEARS.list.length)return;
+ bar.textContent="";
+ YEARS.list.forEach(function(o){
+  var b=el("button","ycol"+(o.n?"":" zero")+(o.y%5===0||o.y===YEARS.min||o.y===YEARS.max?" mark":""));
+  b.type="button";b.dataset.y=String(o.y);b.setAttribute("role","option");b.setAttribute("aria-pressed","false");
+  var chart=el("span","ychart");chart.appendChild(el("span","yrect"));b.appendChild(chart);
+  b.appendChild(el("span","yl",String(o.y).slice(2)));
+  bar.appendChild(b)});
+ var rst=$("ybarreset"),ub=$("ybarunk");
+ rst.addEventListener("click",function(){state.yr=[];yAnchor=null;yAwaitEnd=false;hideYTip();update()});
+ ub.addEventListener("click",function(){
+  if(yrHasUnk())state.yr=state.yr.filter(function(v){return v!=="연도 미확인"});
+  else state.yr=state.yr.concat(["연도 미확인"]);
+  update()});
+ bar.addEventListener("pointerdown",onYDown);
+ bar.addEventListener("pointermove",onYMove);
+ bar.addEventListener("pointerup",onYUp);
+ bar.addEventListener("pointercancel",onYCancel);
+ bar.addEventListener("keydown",onYKey);
+ bar.addEventListener("pointerover",onYOver);
+ bar.addEventListener("pointerout",onYOut);
+}
+
+function yearFromPoint(ev){
+ var t=document.elementFromPoint(ev.clientX,ev.clientY);
+ var col=t&&t.closest?t.closest("#ybar .ycol"):null;
+ if(col)return parseInt(col.dataset.y,10);
+ var bar=$("ybar");if(!bar)return null;
+ var cols=bar.children;if(!cols.length)return null;
+ var r=bar.getBoundingClientRect();
+ if(ev.clientX<=r.left)return parseInt(cols[0].dataset.y,10);
+ if(ev.clientX>=r.right)return parseInt(cols[cols.length-1].dataset.y,10);
+ for(var i=0;i<cols.length;i++){
+  var cr=cols[i].getBoundingClientRect();
+  if(ev.clientX>=cr.left&&ev.clientX<=cr.right)return parseInt(cols[i].dataset.y,10)}
+ return null}
+
+function colForYear(y){
+ var cols=$("ybar").children;
+ for(var i=0;i<cols.length;i++)if(parseInt(cols[i].dataset.y,10)===y)return cols[i];
+ return null}
+
+function showYTip(y,n,hold){
+ var tip=$("ytip"),col=colForYear(y),wrap=$("ybarwrap");
+ if(!tip||!col||!wrap)return;
+ tip.textContent=y+"년 · "+n+"건";tip.hidden=false;
+ var wr=wrap.getBoundingClientRect(),cr=col.getBoundingClientRect();
+ var x=cr.left+cr.width/2-wr.left,tw=tip.offsetWidth||80;
+ x=Math.max(tw/2+4,Math.min(wr.width-tw/2-4,x));
+ tip.style.left=x+"px";
+ tip.style.top=(cr.top-wr.top-6)+"px";
+ if(yTipTimer){clearTimeout(yTipTimer);yTipTimer=null}
+ if(hold)yTipTimer=setTimeout(hideYTip,1400)}
+function hideYTip(){var tip=$("ytip");if(tip)tip.hidden=true;if(yTipTimer){clearTimeout(yTipTimer);yTipTimer=null}}
+function tipCount(y){var cc=yearCounts();return cc.counts[y]||0}
+
+function applyYearRange(a,b,toggleSingle){
+ var lo=Math.min(a,b),hi=Math.max(a,b);
+ if(toggleSingle&&lo===hi){
+  var cur=yrNums();
+  if(cur.length===1&&cur[0]===lo){state.yr=yrHasUnk()?["연도 미확인"]:[];yAwaitEnd=false;update();return}}
+ setYearRange(lo,hi,true);yAwaitEnd=false;update()}
+
+function onYDown(e){
+ if(e.button!=null&&e.button!==0)return;
+ var y=yearFromPoint(e);if(y==null)return;
+ var isTouch=e.pointerType==="touch"||e.pointerType==="pen";
+ // second tap completes a range in tap-start/tap-end mode
+ if(isTouch&&yAwaitEnd&&yAnchor!=null&&!e.shiftKey){
+  e.preventDefault();yAwaitEnd=false;applyYearRange(yAnchor,y,false);showYTip(y,tipCount(y),true);return}
+ if(e.shiftKey&&yAnchor!=null){
+  e.preventDefault();applyYearRange(yAnchor,y,false);showYTip(y,tipCount(y),isTouch);return}
+ yDrag={start:y,end:y,id:e.pointerId,moved:false,touch:isTouch};
+ yAnchor=y;
+ try{e.currentTarget.setPointerCapture(e.pointerId)}catch(err){}
+ e.preventDefault();
+ paintYearBar(yDrag);showYTip(y,tipCount(y),false)}
+
+function onYMove(e){
+ if(!yDrag||e.pointerId!==yDrag.id){
+  if(!yDrag){var y=yearFromPoint(e);if(y!=null&&e.pointerType==="mouse")showYTip(y,tipCount(y),false)}
+  return}
+ var y=yearFromPoint(e);if(y==null)return;
+ if(y!==yDrag.end){yDrag.end=y;yDrag.moved=true;paintYearBar(yDrag);showYTip(y,tipCount(y),false)}}
+
+function onYUp(e){
+ if(!yDrag||(e.pointerId!=null&&e.pointerId!==yDrag.id))return;
+ var a=yDrag.start,b=yDrag.end,moved=yDrag.moved,touch=yDrag.touch;
+ yDrag=null;
+ try{e.currentTarget.releasePointerCapture(e.pointerId)}catch(err){}
+ if(touch&&!moved){
+  // tap-start: select this year, wait for a tap-end to extend
+  applyYearRange(a,a,true);
+  var still=yrNums().length===1&&yrNums()[0]===a;
+  yAwaitEnd=still;yAnchor=still?a:null;refreshYearBar();showYTip(a,tipCount(a),true);return}
+ applyYearRange(a,b,!moved);showYTip(b,tipCount(b),touch)}
+
+function onYCancel(e){
+ if(!yDrag||(e.pointerId!=null&&e.pointerId!==yDrag.id))return;
+ yDrag=null;refreshYearBar();hideYTip()}
+
+function onYOver(e){
+ if(yDrag)return;
+ if(e.pointerType&&e.pointerType!=="mouse")return;
+ var y=yearFromPoint(e);if(y!=null)showYTip(y,tipCount(y),false)}
+function onYOut(e){
+ if(yDrag)return;
+ if(e.relatedTarget&&e.currentTarget.contains(e.relatedTarget))return;
+ hideYTip()}
+
+function onYKey(e){
+ var col=document.activeElement;
+ if(!col||!col.classList||!col.classList.contains("ycol"))return;
+ var cols=[].slice.call($("ybar").children),i=cols.indexOf(col);
+ if(e.key==="Escape"){
+  if(state.yr.length||yAwaitEnd){e.preventDefault();state.yr=[];yAnchor=null;yAwaitEnd=false;hideYTip();update()}
+  return}
+ if(e.key==="ArrowLeft"||e.key==="ArrowRight"){
+  e.preventDefault();
+  var j=i+(e.key==="ArrowLeft"?-1:1);if(j<0||j>=cols.length)return;
+  cols[j].focus();
+  var ny=parseInt(cols[j].dataset.y,10);
+  if(e.shiftKey){if(yAnchor==null)yAnchor=parseInt(col.dataset.y,10);applyYearRange(yAnchor,ny,false)}
+  showYTip(ny,tipCount(ny),false);return}
+ if(e.key==="Enter"||e.key===" "){
+  e.preventDefault();
+  var y=parseInt(col.dataset.y,10);
+  if(e.shiftKey&&yAnchor!=null)applyYearRange(yAnchor,y,false);
+  else{yAnchor=y;applyYearRange(y,y,true)}
+  showYTip(y,tipCount(y),false)}}
+
+buildYearBar();
 
 update();
 })();
