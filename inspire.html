@@ -42,7 +42,6 @@ header.top{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px so
 .card .t{display:block;margin-top:10px;font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.35}
 .card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .card .tag{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--mute);font-size:12px;font-weight:600}
-.card .board{display:block;margin-top:6px;font-size:12px;color:var(--mute)}
 .empty{padding:48px 0;text-align:center;color:var(--mute)}
 @media (max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:700px){.grid{grid-template-columns:repeat(2,1fr);gap:16px 12px}.top-in,.hero-in,.wrap{padding-left:16px;padding-right:16px}.hero{padding-top:28px}}
@@ -76,7 +75,7 @@ header.top{position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px so
  </div>
 </section>
 <main class="wrap">
- <p class="meta" id="meta"></p>
+ <p class="meta" id="meta" hidden></p>
  <div class="grid" id="grid"></div>
  <p class="empty" id="empty" hidden>이 분류에 자료가 아직 없습니다.</p>
 </main>
@@ -115,7 +114,6 @@ function render(){
   tabs.appendChild(a);
  });
  var list=items.filter(function(it){return it.form_id===form.id});
- $("meta").textContent=I.board?("보드 · "+I.board):"";
  var g=$("grid");g.textContent="";
  list.forEach(function(it){
   var a=el("a","card");
@@ -128,7 +126,6 @@ function render(){
   var tags=el("span","tags");
   (it.themes||[]).slice(0,2).forEach(function(t){tags.appendChild(el("span","tag",t))});
   a.appendChild(tags);
-  if(it.board)a.appendChild(el("span","board","보드 · "+it.board));
   g.appendChild(a);
  });
  $("empty").hidden=list.length>0;
